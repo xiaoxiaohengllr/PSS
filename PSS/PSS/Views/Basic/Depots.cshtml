@@ -1,0 +1,189 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title></title>
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/bootstrap-table-develop/dist/bootstrap-table.css" rel="stylesheet" />
+    <link href="~/Content/bootstrap-select.min.css" rel="stylesheet" />
+    <link href="~/layui/css/layui.css" rel="stylesheet" />
+    <link href="~/iCheck/all.css" rel="stylesheet" />
+</head>
+<body>
+    <div class="panel panel-default">
+        <div class="panel-heading">仓库设置</div>
+        <div class="panel-body">
+            <div id="btns" class="btn-group">
+                <button class="btn btn-primary" id="addDepots"><i class="glyphicon glyphicon-save"></i>新增</button>
+                <button class="btn btn-info" id="EditDepots"><i class="glyphicon glyphicon-edit"></i>修改</button>
+                <button class="btn btn-danger" id="DeleteDepots"><i class="glyphicon glyphicon-remove"></i>删除</button>
+                <form id="formSelectDepots" class="form-inline" style="float:left; margin-left:10px;">
+                    <div class="form-group">
+                        <label for="DepotName">仓库名称:</label>
+                        <input type="text" name="DepotName" class="form-control" id="DepotName" placeholder="请输入仓库名称">
+                    </div>
+                    <button type="button" id="search" class="btn btn-default">查询</button>
+                </form>
+            </div>
+            <table id="depotsTable" class="table table-bordered table-striped table-hover"></table>
+        </div>
+    </div>
+    <script src="~/Scripts/jquery-3.2.1.min.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    <script src="~/bootstrap-table-develop/dist/bootstrap-table.js"></script>
+    <script src="~/bootstrap-table-develop/dist/locale/bootstrap-table-zh-CN.min.js"></script>
+    <script src="~/bootstrap-table-develop/dist/extensions/export/bootstrap-table-export.min.js"></script>
+    <script src="~/bootstrap-table-develop/dist/extensions/export/tableExport.js"></script>
+    <script src="~/Scripts/bootstrap-select.min.js"></script>
+    <script src="~/layui/layui.all.js"></script>
+    <script src="~/Scripts/ajaxHelp.js"></script>
+    <script src="~/iCheck/jquery.icheck.min.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            //绑定表格数据
+            $("#depotsTable").bootstrapTable({
+                method: "get",
+                url: "http://localhost:43727/api/Depots",
+                undefinedText: "",//当数据为 undefined 时显示的空字符
+                pagination: true, //表格底部显示分页条
+                paginationLoop: false,//禁用分页条无限循环的功能
+                toolbar: "#btns",
+                sidePagination: "server",
+                showExport: true,
+                pageNumber: 1,
+                pageSize: 10,
+                pageList: [5, 10, 20, "All"],
+                paginationPreText: "上一页",
+                paginationNextText: "下一页",
+                showColumns: true,
+                showRefresh: true,
+                clickToSelect: true,
+                queryParams: function (params) {
+                    params.DepotName = "";
+                    return params;
+                },
+                columns: [
+                    { checkbox: true },
+                    { field: "DepotID", title: "仓库编号" },
+                    { field: "DepotName", title: "仓库名称" },
+                    { field: "DepotMan", title: "联系人" },
+                    { field: "DepotTel", title: "电话" },
+                    { field: "DepotAddress", title: "地址" },
+                    { field: "DepotDesc", title: "备注" },
+                    {
+                        field: "IsDefault", title: "默认仓库", formatter: function (value, row, index) {
+                            return value ? "是" : "否";
+                        }
+                    }
+                ]
+            });
+            //条件查询
+            $("#search").click(function () {
+                var DepotName = $("#DepotName").val();
+                $.getJSON("http://localhost:43727/api/Depots?order=asc&offset=0&limit=10&DepotName=" + DepotName, function (data) {
+                    $("#depotsTable").bootstrapTable("load", data);
+                });
+            });
+            //添加
+            $("#addDepots").click(function () {
+                layer.open({
+                    type: 2,
+                    area: ['400px', '570px'],
+                    scrollbar: false,
+                    title: ['新增仓库', 'font-weight:700'],
+                    content: ['/Basic/DepotsEdit.html', 'auto'],
+                    success: function (layero, index) {
+                        var body = layer.getChildFrame("body", index);
+                        $(body).find(":checkbox").iCheck({
+                            checkboxClass: "icheckbox_square-red"
+                        });
+                    },
+                    end: function () {
+                        //销毁时刷新
+                        $('#depotsTable').bootstrapTable("refresh");
+                    }
+                });
+            });
+            //修改
+            $("#EditDepots").click(function () {
+                //获得要修改的数据
+                var row = $("table").bootstrapTable("getSelections");
+                if (row.length != 1) {
+                    layer.msg("请选择一条要修改的仓库！");
+                    return;
+                }
+                layer.open({
+                    type: 2,
+                    area: ['400px', '570px'],
+                    scrollbar: false,
+                    title: ['修改仓库', 'font-weight:700'],
+                    content: ['/Basic/DepotsEdit.html', 'auto'],
+                    success: function (layero, index) {
+                        var body = layer.getChildFrame("body", index);
+                        $.getJSON("http://localhost:43727/api/Depots/" + row[0].DepotID, function (data) {
+                            setForm($(body).find("form"), data);
+                            $(body).find(":checkbox").iCheck({
+                                checkboxClass: "icheckbox_square-red"
+                            });
+                            if (data.IsDefault) {
+                                $(body).find(":checkbox").iCheck("check");
+                            }
+                        });
+                    },
+                    end: function () {
+                        //销毁时刷新
+                        $('#depotsTable').bootstrapTable("refresh");
+                    }
+                });
+            });
+            //删除
+            $("#DeleteDepots").click(function () {
+                var row = $("table").bootstrapTable("getSelections");
+                if (row.length != 1) {
+                    layer.msg("请选择一条要删除的仓库！");
+                    return;
+                }
+                //判断仓库是否存在
+                var bool = true;
+                $.ajax({
+                    url: "http://localhost:43727/api/DepotStock?depotId=" + row[0].DepotID,
+                    type: "get",
+                    async: false,
+                    success: function (data) {
+                        if (data) {
+                            layer.msg("仓库里存在商品！");
+                            bool = false;
+                        }
+                    }
+                });
+                if (!bool) return false;
+                layer.confirm('您确定要删除此仓库吗？', {
+                    btn: ['确定', '取消'], //按钮
+                    icon: 2
+                }, function () {
+                    $.ajax({
+                        url: "http://localhost:43727/api/Depots/" + row[0].DepotID,
+                        type: "delete",
+                        success: function (data) {
+                            if (data) {
+                                layer.msg("删除成功！");
+                                $('#depotsTable').bootstrapTable("refresh");
+                            } else {
+                                layer.msg("删除失败！");
+                            }
+                        }
+                    });
+                }, function () {
+
+                });
+            });
+        });
+    </script>
+</body>
+</html>

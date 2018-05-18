@@ -1,0 +1,106 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title></title>
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/Content/bootstrap-select.min.css" rel="stylesheet" />
+    <link href="~/Content/bootstrapValidator.min.css" rel="stylesheet" />
+</head>
+<body>
+    <div class="container">
+        <form>
+            <div class="form-group">
+                <label for="PTName">
+                    商品类型名称
+                </label>
+                <input type="text" class="form-control" id="PTName" name="PTName" placeholder="请输入商品类型名称">
+            </div>
+            <div class="form-group">
+                <label for="PTParentID">
+                    父商品类型
+                </label>
+                <select class="selectpicker form-control" data-style="btn-default" id="PTParentID" name="PTParentID">
+                    <optgroup label="父商品类型"><option value="0">父商品类型</option></optgroup>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="PTDes">
+                    商品类型描述
+                </label>
+                <textarea class="form-control" id="PTDes" name="PTDes" placeholder="请输入商品类型描述" style="resize: none"></textarea>
+            </div>
+            <div class="form-group container text-center">
+                <input type="submit" class="btn btn-primary" value="提交">
+                <input type="button" class="btn btn-default" onclick="Close()" value="返回">
+            </div>
+            <input type="hidden" id="PTID" name="PTID" value="" />
+        </form>
+    </div>
+    <script src="~/Scripts/jquery-3.2.1.min.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    <script src="~/Scripts/ajaxHelp.js"></script>
+    <script src="~/layui/layui.all.js"></script>
+    <script src="~/Scripts/bootstrapValidator.min.js"></script>
+    <script>
+        //关闭弹出层
+        function Close() {
+            //parent.window.location.reload();
+            var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+            parent.layer.close(index);
+        }
+        $(function () {
+            $("form").bootstrapValidator({
+                message: "必填",//无效
+                feedbackIcons: { //样式设置
+                    valid: 'glyphicon glyphicon-ok',
+                    invalid: 'glyphicon glyphicon-remove',
+                    validating: 'glyphicon glyphicon-refresh'
+                },
+                fields: {
+                    PTName: {
+                        validators: {
+                            notEmpty: {
+                                message: "商品类型名不能为空"
+                            },
+                            remote: {
+                                url: "http://localhost:43727/api/ProductTypes",
+                                async: false,
+                                data: function (validator) {
+                                    return {
+                                        PTID: document.getElementById("PTID").value
+                                    };
+                                },
+                                message: "商品类型名已存在",
+                                delay: 1000
+                            }
+                        }
+                    }
+                }
+            }).on('success.form.bv', function (e) {
+                e.preventDefault();
+                var productType = serializeJson($("form"));
+                $.ajax({
+                    type: productType.PTID == "" ? "post" : "put",//如果有编号就put提交，没有post就提交
+                    async: false,
+                    url: "http://localhost:43727/api/ProductTypes",
+                    data: productType,
+                    success: function (rs) {
+                        if (rs) {
+                            Close();
+                        } else {
+                            layer.msg("操作失败");
+                        }
+                    }
+                });
+            })
+        })
+    </script>
+</body>
+</html>

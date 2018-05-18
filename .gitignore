@@ -3,3 +3,8 @@
 ################################################################################
 
 /PSS/.vs/PSS/v15/Server/sqlite3
+/PSS/PSS/bin
+/PSS/PSS/obj
+/PSS_WebApi/.vs/PSS_WebApi/v15/Server/sqlite3
+/PSS_WebApi/PSS_WebApi/bin
+/PSS_WebApi/PSS_WebApi/obj

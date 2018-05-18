@@ -1,0 +1,649 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title></title>
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/bootstrap-table-develop/dist/bootstrap-table.css" rel="stylesheet" />
+    <link href="~/Content/bootstrap-select.min.css" rel="stylesheet" />
+    <link href="~/layui/css/layui.css" rel="stylesheet" />
+    <link href="~/Content/bootstrapValidator.min.css" rel="stylesheet" />
+</head>
+<body>
+    <div class="panel panel-default">
+        <div class="panel-heading">商品基础数据</div>
+        <div class="panel-body">
+
+            <div id="productUnitBtns" class="btn-group">
+                <button class="btn btn-primary" id="addProductUnit"><i class="glyphicon glyphicon-save"></i>新增</button>
+                <button class="btn btn-info" id="EditProductUnit"><i class="glyphicon glyphicon-edit"></i>修改</button>
+                <button class="btn btn-danger" id="DeleteProductUnit"><i class="glyphicon glyphicon-remove"></i>删除</button>
+            </div>
+            <table id="productUnitTable" class="table table-bordered table-striped table-hover"></table>
+            <div id="productSpecBtns" class="btn-group">
+                <button class="btn btn-primary" id="addProductSpec"><i class="glyphicon glyphicon-save"></i>新增</button>
+                <button class="btn btn-info" id="EditProductSpec"><i class="glyphicon glyphicon-edit"></i>修改</button>
+                <button class="btn btn-danger" id="DeleteProductSpec"><i class="glyphicon glyphicon-remove"></i>删除</button>
+            </div>
+            <table id="productSpecTable" class="table table-bordered table-striped table-hover"></table>
+            <div id="productColorBtns" class="btn-group">
+                <button class="btn btn-primary" id="addProductColor"><i class="glyphicon glyphicon-save"></i>新增</button>
+                <button class="btn btn-info" id="EditProductColor"><i class="glyphicon glyphicon-edit"></i>修改</button>
+                <button class="btn btn-danger" id="DeleteProductColor"><i class="glyphicon glyphicon-remove"></i>删除</button>
+            </div>
+            <table id="productColorTable" class="table table-bordered table-striped table-hover"></table>
+        </div>
+    </div>
+    <script src="~/Scripts/jquery-3.2.1.min.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    <script src="~/bootstrap-table-develop/dist/bootstrap-table.js"></script>
+    <script src="~/bootstrap-table-develop/dist/locale/bootstrap-table-zh-CN.min.js"></script>
+    <script src="~/bootstrap-table-develop/dist/extensions/export/bootstrap-table-export.min.js"></script>
+    <script src="~/bootstrap-table-develop/dist/extensions/export/tableExport.js"></script>
+    <script src="~/Scripts/bootstrap-select.min.js"></script>
+    <script src="~/layui/layui.all.js"></script>
+    <script src="~/Scripts/ajaxHelp.js"></script>
+    <script src="~/Scripts/bootstrapValidator.min.js"></script>
+    <script>
+        //关闭弹出层
+        function Close() {
+            layer.closeAll();
+        }
+        $(function () {
+            //绑定商品单位
+            $("#productUnitTable").bootstrapTable({
+                method: "get",
+                url: "http://localhost:43727/api/ProductUnit",
+                undefinedText: "",//当数据为 undefined 时显示的空字符
+                pagination: true, //表格底部显示分页条
+                paginationLoop: false,//禁用分页条无限循环的功能
+                toolbar: "#productUnitBtns",
+                sidePagination: "server",
+                showExport: true,
+                pageNumber: 1,
+                pageSize: 5,
+                pageList: [5, 10, "All"],
+                paginationPreText: "上一页",
+                paginationNextText: "下一页",
+                showColumns: true,
+                showRefresh: true,
+                clickToSelect: true,
+                columns: [
+                    { checkbox: true },
+                    { field: "PUID", title: "单位编号" },
+                    { field: "PUName", title: "单位名称" }
+                ]
+            });
+            //添加商品单位
+            $("#addProductUnit").click(function () {
+                layer.open({
+                    type: 1,
+                    area: ['400px', '200px'],
+                    scrollbar: false,
+                    cache: false,
+                    title: ['新增商品单位', 'font-weight:700'],
+                    content: '<div style="margin-left:12px;margin-right:12px"><form id="productUnitFrom"><div class="form-group"><label for="PUName">商品单位名称</label><input type="text" class="form-control" id="PUName" name="PUName" placeholder="请输入商品单位名称"></div><div class="form-group text-center"><input type="submit" class="btn btn-primary" value="提交">&nbsp;&nbsp;<input type="button" class="btn btn-default" onclick="Close()" value="返回"></div><input type="hidden" id="PUID" name="PUID" value=""/></form></div>',
+                    success: function (layero, index) {
+                        $("#productUnitFrom").bootstrapValidator({
+                            message: "必填",//无效
+                            feedbackIcons: { //样式设置
+                                valid: 'glyphicon glyphicon-ok',
+                                invalid: 'glyphicon glyphicon-remove',
+                                validating: 'glyphicon glyphicon-refresh'
+                            },
+                            fields: {
+                                PUName: {
+                                    validators: {
+                                        notEmpty: {
+                                            message: "商品单位名称不能为空"
+                                        },
+                                        remote: {
+                                            url: "http://localhost:43727/api/ProductUnit",
+                                            async: false,
+                                            data: function (validator) {
+                                                return {
+                                                    pUID: document.getElementById("PUID").value
+                                                };
+                                            },
+                                            message: "商品单位名称已存在",
+                                            delay: 1000
+                                        }
+                                    }
+                                }
+                            }
+                        }).on('success.form.bv', function (e) {
+                            e.preventDefault();
+                            var productUnit = serializeJson($("#productUnitFrom"));
+                            $.ajax({
+                                type: "post",
+                                async: false,
+                                url: "http://localhost:43727/api/ProductUnit",
+                                data: productUnit,
+                                success: function (rs) {
+                                    if (rs) {
+                                        Close();
+                                    } else {
+                                        layer.msg("操作失败");
+                                    }
+                                }
+                            });
+                        });
+                    },
+                    end: function () {
+                        //销毁时刷新
+                        $('#productUnitTable').bootstrapTable("refresh");
+                    }
+                });
+            });
+            //修改商品单位
+            $("#EditProductUnit").click(function () {
+                var row = $("#productUnitTable").bootstrapTable("getSelections");
+                if (row.length != 1) {
+                    layer.msg("请选择一条要修改的商品单位！");
+                    return;
+                }
+                layer.open({
+                    type: 1,
+                    area: ['400px', '200px'],
+                    scrollbar: false,
+                    cache: false,
+                    title: ['修改商品单位', 'font-weight:700'],
+                    content: '<div style="margin-left:12px;margin-right:12px"><form id="productUnitFrom"><div class="form-group"><label for="PUName">商品单位名称</label><input type="text" class="form-control" id="PUName" name="PUName" placeholder="请输入商品单位名称"></div><div class="form-group text-center"><input type="submit" class="btn btn-primary" value="提交">&nbsp;&nbsp;<input type="button" class="btn btn-default" onclick="Close()" value="返回"></div><input type="hidden" id="PUID" name="PUID" value=""/></form></div>',
+                    success: function (layero, index) {
+                        $.getJSON("http://localhost:43727/api/ProductUnit?pUID=" + row[0].PUID, function (data) {
+                            $("#productUnitFrom").find("[name=PUName]").val(data.PUName);
+                            $("#productUnitFrom").find("[name=PUID]").val(data.PUID);
+                        });
+                        $("#productUnitFrom").bootstrapValidator({
+                            message: "必填",//无效
+                            feedbackIcons: { //样式设置
+                                valid: 'glyphicon glyphicon-ok',
+                                invalid: 'glyphicon glyphicon-remove',
+                                validating: 'glyphicon glyphicon-refresh'
+                            },
+                            fields: {
+                                PUName: {
+                                    validators: {
+                                        notEmpty: {
+                                            message: "商品单位名称不能为空"
+                                        },
+                                        remote: {
+                                            url: "http://localhost:43727/api/ProductUnit",
+                                            async: false,
+                                            data: function (validator) {
+                                                return {
+                                                    pUID: document.getElementById("PUID").value
+                                                };
+                                            },
+                                            message: "商品单位名称已存在",
+                                            delay: 1000
+                                        }
+                                    }
+                                }
+                            }
+                        }).on('success.form.bv', function (e) {
+                            e.preventDefault();
+                            var productUnit = serializeJson($("#productUnitFrom"));
+                            $.ajax({
+                                type: "put",
+                                async: false,
+                                url: "http://localhost:43727/api/ProductUnit",
+                                data: productUnit,
+                                success: function (rs) {
+                                    if (rs) {
+                                        Close();
+                                    } else {
+                                        layer.msg("操作失败");
+                                    }
+                                }
+                            });
+                        });
+                    },
+                    end: function () {
+                        //销毁时刷新
+                        $('#productUnitTable').bootstrapTable("refresh");
+                    }
+                });
+            });
+            //删除商品单位
+            $("#DeleteProductUnit").click(function () {
+                var row = $("#productUnitTable").bootstrapTable("getSelections");
+                if (row.length != 1) {
+                    layer.msg("请选择一条要删除的商品单位！");
+                    return;
+                }
+                var bool = true;
+                $.ajax({
+                    url: "http://localhost:43727/api/Products?PUID=" + row[0].PUID,
+                    type: "get",
+                    async: false,
+                    success: function (data) {
+                        //如果是true就说明有子类不能删除
+                        if (data) {
+                            layer.msg("商品单位存在商品，不能删除！");
+                            bool = false;
+                        }
+                    }
+                });
+                if (!bool) return false;
+                layer.confirm('您确定要删除此商品单位吗？', {
+                    btn: ['确定', '取消'], //按钮
+                    icon: 2
+                }, function () {
+                    $.ajax({
+                        url: "http://localhost:43727/api/ProductUnit/" + row[0].PUID,
+                        type: "delete",
+                        success: function (data) {
+                            if (data) {
+                                layer.msg("删除成功！");
+                                $('#productUnitTable').bootstrapTable("refresh");
+                            } else {
+                                layer.msg("删除失败！");
+                            }
+                        }
+                    });
+                }, function () {
+
+                });
+            });
+            //绑定商品规格
+            $("#productSpecTable").bootstrapTable({
+                method: "get",
+                url: "http://localhost:43727/api/ProductSpec",
+                undefinedText: "",//当数据为 undefined 时显示的空字符
+                pagination: true, //表格底部显示分页条
+                paginationLoop: false,//禁用分页条无限循环的功能
+                toolbar: "#productSpecBtns",
+                sidePagination: "server",
+                showExport: true,
+                pageNumber: 1,
+                pageSize: 5,
+                pageList: [5, 10, "All"],
+                paginationPreText: "上一页",
+                paginationNextText: "下一页",
+                showColumns: true,
+                showRefresh: true,
+                clickToSelect: true,
+                columns: [
+                    { checkbox: true },
+                    { field: "PSID", title: "规格编号" },
+                    { field: "PSName", title: "规格名称" }
+                ]
+            });
+            //添加商品规格
+            $("#addProductSpec").click(function () {
+                layer.open({
+                    type: 1,
+                    area: ['400px', '200px'],
+                    scrollbar: false,
+                    cache: false,
+                    title: ['新增商品规格', 'font-weight:700'],
+                    content: '<div style="margin-left:12px;margin-right:12px"><form id="productSpecFrom"><div class="form-group"><label for="PSName">商品规格名称</label><input type="text" class="form-control" id="PSName" name="PSName" placeholder="请输入商品规格名称"></div><div class="form-group text-center"><input type="submit" class="btn btn-primary" value="提交">&nbsp;&nbsp;<input type="button" class="btn btn-default" onclick="Close()" value="返回"></div><input type="hidden" id="PSID" name="PSID" value=""/></form></div>',
+                    success: function (layero, index) {
+                        $("#productSpecFrom").bootstrapValidator({
+                            message: "必填",//无效
+                            feedbackIcons: { //样式设置
+                                valid: 'glyphicon glyphicon-ok',
+                                invalid: 'glyphicon glyphicon-remove',
+                                validating: 'glyphicon glyphicon-refresh'
+                            },
+                            fields: {
+                                PSName: {
+                                    validators: {
+                                        notEmpty: {
+                                            message: "商品规格名称不能为空"
+                                        },
+                                        remote: {
+                                            url: "http://localhost:43727/api/ProductSpec",
+                                            async: false,
+                                            data: function (validator) {
+                                                return {
+                                                    pSID: document.getElementById("PSID").value
+                                                };
+                                            },
+                                            message: "商品规格名称已存在",
+                                            delay: 1000
+                                        }
+                                    }
+                                }
+                            }
+                        }).on('success.form.bv', function (e) {
+                            e.preventDefault();
+                            var productSpec = serializeJson($("#productSpecFrom"));
+                            $.ajax({
+                                type: "post",
+                                async: false,
+                                url: "http://localhost:43727/api/ProductSpec",
+                                data: productSpec,
+                                success: function (rs) {
+                                    if (rs) {
+                                        Close();
+                                    } else {
+                                        layer.msg("操作失败");
+                                    }
+                                }
+                            });
+                        });
+                    },
+                    end: function () {
+                        //销毁时刷新
+                        $('#productSpecTable').bootstrapTable("refresh");
+                    }
+                });
+            });
+            //修改商品规格
+            $("#EditProductSpec").click(function () {
+                var row = $("#productSpecTable").bootstrapTable("getSelections");
+                if (row.length != 1) {
+                    layer.msg("请选择一条要修改的商品规格！");
+                    return;
+                }
+                layer.open({
+                    type: 1,
+                    area: ['400px', '200px'],
+                    scrollbar: false,
+                    cache: false,
+                    title: ['修改商品规格', 'font-weight:700'],
+                    content: '<div style="margin-left:12px;margin-right:12px"><form id="productSpecFrom"><div class="form-group"><label for="PSName">商品规格名称</label><input type="text" class="form-control" id="PSName" name="PSName" placeholder="请输入商品规格名称"></div><div class="form-group text-center"><input type="submit" class="btn btn-primary" value="提交">&nbsp;&nbsp;<input type="button" class="btn btn-default" onclick="Close()" value="返回"></div><input type="hidden" id="PSID" name="PSID" value=""/></form></div>',
+                    success: function (layero, index) {
+                        $.getJSON("http://localhost:43727/api/ProductSpec?pSID=" + row[0].PSID, function (data) {
+                            $("#productSpecFrom").find("[name=PSName]").val(data.PSName);
+                            $("#productSpecFrom").find("[name=PSID]").val(data.PSID);
+                        });
+                        $("#productSpecFrom").bootstrapValidator({
+                            message: "必填",//无效
+                            feedbackIcons: { //样式设置
+                                valid: 'glyphicon glyphicon-ok',
+                                invalid: 'glyphicon glyphicon-remove',
+                                validating: 'glyphicon glyphicon-refresh'
+                            },
+                            fields: {
+                                PSName: {
+                                    validators: {
+                                        notEmpty: {
+                                            message: "商品规格名称不能为空"
+                                        },
+                                        remote: {
+                                            url: "http://localhost:43727/api/ProductSpec",
+                                            async: false,
+                                            data: function (validator) {
+                                                return {
+                                                    pSID: document.getElementById("PSID").value
+                                                };
+                                            },
+                                            message: "商品规格名称已存在",
+                                            delay: 1000
+                                        }
+                                    }
+                                }
+                            }
+                        }).on('success.form.bv', function (e) {
+                            e.preventDefault();
+                            var productSpec = serializeJson($("#productSpecFrom"));
+                            $.ajax({
+                                type: "put",
+                                async: false,
+                                url: "http://localhost:43727/api/ProductSpec",
+                                data: productSpec,
+                                success: function (rs) {
+                                    if (rs) {
+                                        Close();
+                                    } else {
+                                        layer.msg("操作失败");
+                                    }
+                                }
+                            });
+                        });
+                    },
+                    end: function () {
+                        //销毁时刷新
+                        $('#productSpecTable').bootstrapTable("refresh");
+                    }
+                });
+            });
+            //删除商品规格
+            $("#DeleteProductSpec").click(function () {
+                var row = $("#productSpecTable").bootstrapTable("getSelections");
+                if (row.length != 1) {
+                    layer.msg("请选择一条要删除的商品规格！");
+                    return;
+                }
+                var bool = true;
+                $.ajax({
+                    url: "http://localhost:43727/api/Products?PSID=" + row[0].PSID,
+                    type: "get",
+                    async: false,
+                    success: function (data) {
+                        //如果是true就说明有子类不能删除
+                        if (data) {
+                            layer.msg("商品规格存在商品，不能删除！");
+                            bool = false;
+                        }
+                    }
+                });
+                if (!bool) return false;
+                layer.confirm('您确定要删除此商品规格吗？', {
+                    btn: ['确定', '取消'], //按钮
+                    icon: 2
+                }, function () {
+                    $.ajax({
+                        url: "http://localhost:43727/api/ProductSpec/" + row[0].PSID,
+                        type: "delete",
+                        success: function (data) {
+                            if (data) {
+                                layer.msg("删除成功！");
+                                $('#productSpecTable').bootstrapTable("refresh");
+                            } else {
+                                layer.msg("删除失败！");
+                            }
+                        }
+                    });
+                }, function () {
+
+                });
+            });
+            //绑定商品颜色
+            $("#productColorTable").bootstrapTable({
+                method: "get",
+                url: "http://localhost:43727/api/ProductColor",
+                undefinedText: "",//当数据为 undefined 时显示的空字符
+                pagination: true, //表格底部显示分页条
+                paginationLoop: false,//禁用分页条无限循环的功能
+                toolbar: "#productColorBtns",
+                sidePagination: "server",
+                showExport: true,
+                pageNumber: 1,
+                pageSize: 5,
+                pageList: [5, 10, "All"],
+                paginationPreText: "上一页",
+                paginationNextText: "下一页",
+                showColumns: true,
+                showRefresh: true,
+                clickToSelect: true,
+                columns: [
+                    { checkbox: true },
+                    { field: "PCID", title: "颜色编号" },
+                    { field: "PCName", title: "颜色名称" }
+                ]
+            });
+            //添加商品颜色
+            $("#addProductColor").click(function () {
+                layer.open({
+                    type: 1,
+                    area: ['400px', '200px'],
+                    scrollbar: false,
+                    cache: false,
+                    title: ['新增商品颜色', 'font-weight:700'],
+                    content: '<div style="margin-left:12px;margin-right:12px"><form id="productColorFrom"><div class="form-group"><label for="PCName">商品颜色名称</label><input type="text" class="form-control" id="PCName" name="PCName" placeholder="请输入商品颜色名称"></div><div class="form-group text-center"><input type="submit" class="btn btn-primary" value="提交">&nbsp;&nbsp;<input type="button" class="btn btn-default" onclick="Close()" value="返回"></div><input type="hidden" id="PCID" name="PCID" value=""/></form></div>',
+                    success: function (layero, index) {
+                        $("#productColorFrom").bootstrapValidator({
+                            message: "必填",//无效
+                            feedbackIcons: { //样式设置
+                                valid: 'glyphicon glyphicon-ok',
+                                invalid: 'glyphicon glyphicon-remove',
+                                validating: 'glyphicon glyphicon-refresh'
+                            },
+                            fields: {
+                                PCName: {
+                                    validators: {
+                                        notEmpty: {
+                                            message: "商品颜色名称不能为空"
+                                        },
+                                        remote: {
+                                            url: "http://localhost:43727/api/ProductColor",
+                                            async: false,
+                                            data: function (validator) {
+                                                return {
+                                                    pCID: document.getElementById("PCID").value
+                                                };
+                                            },
+                                            message: "商品颜色名称已存在",
+                                            delay: 1000
+                                        }
+                                    }
+                                }
+                            }
+                        }).on('success.form.bv', function (e) {
+                            e.preventDefault();
+                            var productColor = serializeJson($("#productColorFrom"));
+                            $.ajax({
+                                type: "post",
+                                async: false,
+                                url: "http://localhost:43727/api/ProductColor",
+                                data: productColor,
+                                success: function (rs) {
+                                    if (rs) {
+                                        Close();
+                                    } else {
+                                        layer.msg("操作失败");
+                                    }
+                                }
+                            });
+                        });
+                    },
+                    end: function () {
+                        //销毁时刷新
+                        $('#productColorTable').bootstrapTable("refresh");
+                    }
+                });
+            });
+            //修改商品颜色
+            $("#EditProductColor").click(function () {
+                var row = $("#productColorTable").bootstrapTable("getSelections");
+                if (row.length != 1) {
+                    layer.msg("请选择一条要修改的商品颜色！");
+                    return;
+                }
+                layer.open({
+                    type: 1,
+                    area: ['400px', '200px'],
+                    scrollbar: false,
+                    cache: false,
+                    title: ['修改商品颜色', 'font-weight:700'],
+                    content: '<div style="margin-left:12px;margin-right:12px"><form id="productColorFrom"><div class="form-group"><label for="PCName">商品颜色名称</label><input type="text" class="form-control" id="PCName" name="PCName" placeholder="请输入商品颜色名称"></div><div class="form-group text-center"><input type="submit" class="btn btn-primary" value="提交">&nbsp;&nbsp;<input type="button" class="btn btn-default" onclick="Close()" value="返回"></div><input type="hidden" id="PCID" name="PCID" value=""/></form></div>',
+                    success: function (layero, index) {
+                        $.getJSON("http://localhost:43727/api/ProductColor?pCID=" + row[0].PCID, function (data) {
+                            $("#productColorFrom").find("[name=PCName]").val(data.PCName);
+                            $("#productColorFrom").find("[name=PCID]").val(data.PCID);
+                        });
+                        $("#productColorFrom").bootstrapValidator({
+                            message: "必填",//无效
+                            feedbackIcons: { //样式设置
+                                valid: 'glyphicon glyphicon-ok',
+                                invalid: 'glyphicon glyphicon-remove',
+                                validating: 'glyphicon glyphicon-refresh'
+                            },
+                            fields: {
+                                PCName: {
+                                    validators: {
+                                        notEmpty: {
+                                            message: "商品颜色名称不能为空"
+                                        },
+                                        remote: {
+                                            url: "http://localhost:43727/api/ProductColor",
+                                            async: false,
+                                            data: function (validator) {
+                                                return {
+                                                    pCID: document.getElementById("PCID").value
+                                                };
+                                            },
+                                            message: "商品颜色名称已存在",
+                                            delay: 1000
+                                        }
+                                    }
+                                }
+                            }
+                        }).on('success.form.bv', function (e) {
+                            e.preventDefault();
+                            var productColor = serializeJson($("#productColorFrom"));
+                            $.ajax({
+                                type: "put",
+                                async: false,
+                                url: "http://localhost:43727/api/ProductColor",
+                                data: productColor,
+                                success: function (rs) {
+                                    if (rs) {
+                                        Close();
+                                    } else {
+                                        layer.msg("操作失败");
+                                    }
+                                }
+                            });
+                        });
+                    },
+                    end: function () {
+                        //销毁时刷新
+                        $('#productColorTable').bootstrapTable("refresh");
+                    }
+                });
+            });
+            //删除商品颜色
+            $("#DeleteProductColor").click(function () {
+                var row = $("#productColorTable").bootstrapTable("getSelections");
+                if (row.length != 1) {
+                    layer.msg("请选择一条要删除的商品颜色！");
+                    return;
+                }
+                var bool = true;
+                $.ajax({
+                    url: "http://localhost:43727/api/Products?PCID=" + row[0].PCID,
+                    type: "get",
+                    async: false,
+                    success: function (data) {
+                        if (data) {
+                            layer.msg("商品颜色存在商品，不能删除！");
+                            bool = false;
+                        }
+                    }
+                });
+                if (!bool) return false;
+                layer.confirm('您确定要删除此商品颜色吗？', {
+                    btn: ['确定', '取消'], //按钮
+                    icon: 2
+                }, function () {
+                    $.ajax({
+                        url: "http://localhost:43727/api/ProductColor/" + row[0].PCID,
+                        type: "delete",
+                        success: function (data) {
+                            if (data) {
+                                layer.msg("删除成功！");
+                                $('#productColorTable').bootstrapTable("refresh");
+                            } else {
+                                layer.msg("删除失败！");
+                            }
+                        }
+                    });
+                }, function () {
+
+                });
+            });
+        });
+    </script>
+</body>
+</html>

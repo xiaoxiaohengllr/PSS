@@ -1,0 +1,196 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title></title>
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/bootstrap-table-develop/dist/bootstrap-table.css" rel="stylesheet" />
+    <link href="~/Content/bootstrap-select.min.css" rel="stylesheet" />
+    <link href="~/layui/css/layui.css" rel="stylesheet" />
+    <link href="~/iCheck/all.css" rel="stylesheet" />
+</head>
+<body>
+    <div class="panel panel-default">
+        <div class="panel-heading">仓库设置</div>
+        <div class="panel-body">
+            <div id="btns" class="btn-group">
+                <button class="btn btn-primary" id="AddProductLend"><i class="glyphicon glyphicon-save"></i>新增</button>
+                <button class="btn btn-info" id="EditProductLend"><i class="glyphicon glyphicon-edit"></i>修改</button>
+                <button class="btn btn-danger" id="DeleteProductLend"><i class="glyphicon glyphicon-remove"></i>删除</button>
+                <form id="formSelectDepots" class="form-inline" style="float:left; margin-left:10px;">
+                    <div class="form-group">
+                        <label for="name">公司名称或供应商名称:</label>
+                        <input type="text" name="name" class="form-control" id="name" placeholder="请输入">
+                    </div>
+                    <button type="button" id="search" class="btn btn-default">查询</button>
+                </form>
+            </div>
+            <table id="productLend" class="table table-bordered table-striped table-hover"></table>
+        </div>
+        
+    </div>
+    <script src="~/Scripts/jquery-3.2.1.min.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    <script src="~/bootstrap-table-develop/dist/bootstrap-table.js"></script>
+    <script src="~/bootstrap-table-develop/dist/locale/bootstrap-table-zh-CN.min.js"></script>
+    <script src="~/bootstrap-table-develop/dist/extensions/export/bootstrap-table-export.min.js"></script>
+    <script src="~/bootstrap-table-develop/dist/extensions/export/tableExport.js"></script>
+    <script src="~/Scripts/bootstrap-select.min.js"></script>
+    <script src="~/layui/layui.all.js"></script>
+    <script src="~/Scripts/ajaxHelp.js"></script>
+    <script src="~/iCheck/jquery.icheck.min.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            //绑定表格数据
+            $("#productLend").bootstrapTable({
+                method: "get",
+                url: "http://localhost:43727/api/ProductLend",
+                undefinedText: "",//当数据为 undefined 时显示的空字符
+                pagination: true, //表格底部显示分页条
+                paginationLoop: false,//禁用分页条无限循环的功能
+                toolbar: "#btns",
+                sidePagination: "server",
+                showExport: true,
+                pageNumber: 1,
+                pageSize: 10,
+                pageList: [5, 10, 20, "All"],
+                paginationPreText: "上一页",
+                paginationNextText: "下一页",
+                showColumns: true,
+                showRefresh: true,
+                detailView: true,
+                clickToSelect: true,
+                detailFormatter: function (index, row) {
+                    return '<table class="container-fluid"><tr><td><label>地址:</label> &nbsp; <span>' + row.PPAddress + '</span></td><td><label>传真:</label> &nbsp; <span>' + row.PPFax + '</span></td><td><label>Email:</label> &nbsp; <span>' + row.PPEmail + '</span></td><td><label>网址:</label> &nbsp; <span>' + row.PPUrl + '</span></td><td><label>银行名称:</label> &nbsp; <span>' + row.PPBank + '</span></td><td><label>账号:</label> &nbsp; <span>' + row.PPGoods + '</span></td></tr><tr><td colspan="6"><label>备注:</label> &nbsp; <span>' + row.PPDesc + '</span></td></tr></table>';
+                },
+                queryParams: function (params) {
+                    params.name = "";
+                    return params;
+                },
+                columns: [
+                    { checkbox: true },
+                    { field: "PPID", title: "供货商编号" },
+                    { field: "PPName", title: "供应商名称" },
+                    { field: "PPCompany", title: "公司名称" },
+                    { field: "PPMan", title: "联系人" },
+                    { field: "PPTel", title: "联系电话" },
+                    {
+                        field: "IsDefault", title: "默认供货商", formatter: function (value, row, index) {
+                            return value ? "是" : "否";
+                        }
+                    },
+                ]
+            });
+            //条件查询
+            $("#search").click(function () {
+                var name = $("#name").val();
+                $.getJSON("http://localhost:43727/api/ProductLend?order=asc&offset=0&limit=10&name=" + name, function (data) {
+                    $("#productLend").bootstrapTable("load", data);
+                });
+            });
+            //添加
+            $("#AddProductLend").click(function () {
+                layer.open({
+                    type: 2,
+                    area: ['600px', '600px'],
+                    scrollbar: false,
+                    title: ['新增供应商', 'font-weight:700'],
+                    content: ['/Basic/ProductLendEdit.html', 'auto'],
+                    success: function (layero, index) {
+                        var body = layer.getChildFrame("body", index);
+                        $(body).find(":checkbox").iCheck({
+                            checkboxClass: "icheckbox_square-red"
+                        });
+                    },
+                    end: function () {
+                        //销毁时刷新
+                        $('#productLend').bootstrapTable("refresh");
+                    }
+                });
+            });
+            //修改
+            $("#EditProductLend").click(function () {
+                //获得要修改的数据
+                var row = $("#productLend").bootstrapTable("getSelections");
+                if (row.length != 1) {
+                    layer.msg("请选择一条要修改的仓库！");
+                    return;
+                }
+                layer.open({
+                    type: 2,
+                    area: ['600px', '600px'],
+                    scrollbar: false,
+                    title: ['修改供应商', 'font-weight:700'],
+                    content: ['/Basic/ProductLendEdit.html', 'auto'],
+                    success: function (layero, index) {
+                        var body = layer.getChildFrame("body", index);
+                        $(body).find(":checkbox").iCheck({
+                            checkboxClass: "icheckbox_square-red"
+                        });
+                        $.getJSON("http://localhost:43727/api/ProductLend/" + row[0].PPID, function (data) {
+                            setForm($(body).find("form"), data);
+                            $(body).find(":checkbox").iCheck({
+                                checkboxClass: "icheckbox_square-red"
+                            });
+                            if (data.IsDefault) {
+                                $(body).find(":checkbox").iCheck("check");
+                            }
+                        });
+                    },
+                    end: function () {
+                        //销毁时刷新
+                        $('#productLend').bootstrapTable("refresh");
+                    }
+                });
+            });
+            //删除
+            $("#DeleteProductLend").click(function () {
+                var row = $("table").bootstrapTable("getSelections");
+                if (row.length != 1) {
+                    layer.msg("请选择一条要删除的供应商！");
+                    return;
+                }
+                //判断仓库是否存在
+                var bool = true;
+                $.ajax({
+                    url: "http://localhost:43727/api/Stocks?PPID=" + row[0].PPID,
+                    type: "get",
+                    async: false,
+                    success: function (data) {
+                        if (data) {
+                            layer.msg("供应商有采购单！");
+                            bool = false;
+                        }
+                    }
+                });
+                if (!bool) return false;
+                layer.confirm('您确定要删除此供应商吗？', {
+                    btn: ['确定', '取消'], //按钮
+                    icon: 2
+                }, function () {
+                    $.ajax({
+                        url: "http://localhost:43727/api/ProductLend/" + row[0].PPID,
+                        type: "delete",
+                        success: function (data) {
+                            if (data) {
+                                layer.msg("删除成功！");
+                                $('#productLend').bootstrapTable("refresh");
+                            } else {
+                                layer.msg("删除失败！");
+                            }
+                        }
+                    });
+                }, function () {
+
+                });
+            });
+        });
+    </script>
+</body>
+</html>
