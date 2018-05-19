@@ -48,6 +48,11 @@ namespace PSS.Controllers
         {
             return View();
         }
+        //添加和修改客户资料页面
+        public ActionResult CustomersEdit()
+        {
+            return View();
+        }
         public ActionResult Bank()
         {
             return View();

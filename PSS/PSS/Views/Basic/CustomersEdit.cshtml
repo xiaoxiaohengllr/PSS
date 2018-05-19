@@ -1,0 +1,285 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title></title>
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/Content/bootstrap-select.min.css" rel="stylesheet" />
+    <link href="~/Content/bootstrapValidator.min.css" rel="stylesheet" />
+    <link href="~/iCheck/all.css" rel="stylesheet" />
+</head>
+<body>
+    <div class="container">
+        <form>
+            <div class="form-group">
+                <label for="CusName">
+                    客户名称
+                </label>
+                <input type="text" class="form-control" id="CusName" name="CusName" placeholder="请输入客户名称">
+            </div>
+            <div class="form-group">
+                <label for="CusCompany">
+                    公司名称
+                </label>
+                <input type="text" class="form-control" id="CusCompany" name="CusCompany" placeholder="请输入公司名称">
+            </div>
+            <div class="form-group">
+                <label for="CusMan">
+                    联系人
+                </label>
+                <input type="text" class="form-control" id="CusMan" name="CusMan" placeholder="请输入联系人">
+            </div>
+            <div class="form-group">
+                <label for="CusTel">
+                    联系电话
+                </label>
+                <input type="text" class="form-control" id="CusTel" name="CusTel" placeholder="请输入联系电话">
+            </div>
+            <div class="form-group">
+                <label for="CTID">
+                    客户类型
+                </label>
+                <select id="CTID" name="CTID" class="selectpicker form-control" data-style="btn-default"></select>
+            </div>
+            <div class="form-group">
+                <label for="CLID">
+                    等级类型
+                </label>
+                <select id="CLID" name="CLID" class="selectpicker form-control" data-style="btn-default"></select>
+            </div>
+            <div class="form-group">
+                <label for="CusAddress">
+                    地址
+                </label>
+                <input type="text" class="form-control" id="CusAddress" name="CusAddress" placeholder="请输入地址">
+            </div>
+            <div class="form-group">
+                <label for="CusPhone">
+                    手机
+                </label>
+                <input type="text" class="form-control" id="CusPhone" name="CusPhone" placeholder="请输入手机">
+            </div>
+            <div class="form-group">
+                <label for="CusFax">
+                    传真
+                </label>
+                <input type="text" class="form-control" id="CusFax" name="CusFax" placeholder="请输入传真">
+            </div>
+            <div class="form-group">
+                <label for="CusMail">
+                    E-Mail
+                </label>
+                <input type="text" class="form-control" id="CusMail" name="CusMail" placeholder="请输入E-Mail ">
+            </div>
+            <div class="form-group">
+                <label for="CusUrl">
+                    网站
+                </label>
+                <input type="text" class="form-control" id="CusUrl" name="CusUrl" placeholder="请输入网站 ">
+            </div>
+            <div class="form-group">
+                <label for="CusBank">
+                    银行
+                </label>
+                <input type="text" class="form-control" id="CusBank" name="CusBank" placeholder="请输入银行">
+            </div>
+            <div class="form-group">
+                <label for="CusBankCreate">
+                    开发行
+                </label>
+                <input type="text" class="form-control" id="CusBankCreate" name="CusBankCreate" placeholder="请输入开发行">
+            </div>
+            <div class="form-group">
+                <label for="CusGoogs">
+                    帐号
+                </label>
+                <input type="text" class="form-control" id="CusGoogs" name="CusGoogs" placeholder="请输入帐号">
+            </div>
+            <div class="form-group">
+                <label for="CusSGoogs">
+                    税号
+                </label>
+                <input type="text" class="form-control" id="CusSGoogs" name="CusSGoogs" placeholder="请输入税号">
+            </div>
+            <div class="form-group">
+                <label for="CusRateType">
+                    交易类型
+                </label>
+                <input type="text" class="form-control" id="CusRateType" name="CusRateType" placeholder="请输入交易类型">
+            </div>
+            <div class="form-group">
+                <label for="CusBeginIn">
+                    期初应收
+                </label>
+                <input type="text" class="form-control" id="CusBeginIn" name="CusBeginIn" placeholder="请输入期初应收">
+            </div>
+            <div class="form-group">
+                <label for="CusSorce">
+                    客户积分
+                </label>
+                <input type="text" class="form-control" id="CusSorce" name="CusSorce" value="0" readonly>
+            </div>
+            <div class="form-group">
+                <label for="CusDesc">
+                    备注
+                </label>
+                <textarea type="text" style="resize: none" class="form-control" id="CusDesc" name="CusDesc" placeholder="请输入备注"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="IsDefault">
+                    是否为默认仓库
+                </label>
+                &nbsp;&nbsp;
+                <input id="IsDefault" name="IsDefault" type="checkbox">
+            </div>
+            <div class="form-group container text-center">
+                <input type="submit" class="btn btn-primary" value="提交">
+                <input type="button" class="btn btn-default" onclick="Close()" value="返回">
+            </div>
+            <input type="hidden" id="CusID" name="CusID" value="" />
+        </form>
+    </div>
+    <script src="~/Scripts/jquery-3.2.1.min.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    <script src="~/Scripts/ajaxHelp.js"></script>
+    <script src="~/layui/layui.all.js"></script>
+    <script src="~/Scripts/bootstrapValidator.min.js"></script>
+    <script>
+        //关闭弹出层
+        function Close() {
+            //parent.window.location.reload();
+            var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+            parent.layer.close(index);
+        }
+        $(function () {
+            $("form").bootstrapValidator({
+                message: "必填",//无效
+                feedbackIcons: { //样式设置
+                    valid: 'glyphicon glyphicon-ok',
+                    invalid: 'glyphicon glyphicon-remove',
+                    validating: 'glyphicon glyphicon-refresh'
+                },
+                fields: {
+                    CusName: {
+                        validators: {
+                            notEmpty: {
+                                message: "客户名称不能为空"
+                            }
+                        }
+                    },
+                    CusCompany: {
+                        validators: {
+                            notEmpty: {
+                                message: "公司名称不能为空"
+                            },
+                            remote: {
+                                url: "http://localhost:43727/api/Customers",
+                                async: false,
+                                data: function (validator) {
+                                    return {
+                                        CusID: document.getElementById("CusID").value
+                                    };
+                                },
+                                message: "公司名称已存在",
+                                delay: 1000
+                            }
+                        }
+                    },
+                    CusMan: {
+                        validators: {
+                            notEmpty: {
+                                message: "联系人不能为空"
+                            }
+                        }
+                    },
+                    CusTel: {
+                        validators: {
+                            notEmpty: {
+                                message: "电话不能为空"
+                            },
+                            regexp: {
+                                regexp: /^0\d{2,3}-?\d{7,8}$/,
+                                message: '请输入正确的电话'
+                            }
+                        }
+                    },
+                    CusAddress: {
+                        validators: {
+                            notEmpty: {
+                                message: "地址不能为空"
+                            }
+                        }
+                    },
+                    CusPhone: {
+                        validators: {
+                            notEmpty: {
+                                message: "手机不能为空"
+                            },
+                            regexp: {
+                                regexp: /^1[3|5|8]{1}[0-9]{9}$/,
+                                message: '请输入正确的手机'
+                            }
+                        }
+                    },
+                    CusMail: {
+                        validators: {
+                            regexp: {
+                                regexp: /^[a-z0-9]+([._\\-]*[a-z0-9])*@@([a-z0-9]+[-a-z0-9]*[a-z0-9]+.){1,63}[a-z0-9]+$/,
+                                message: '请输入正确的Email'
+                            }
+                        }
+                    },
+                    CusUrl: {
+                        validators: {
+                            regexp: {
+                                regexp: /^([hH][tT]{2}[pP]:\/\/|[hH][tT]{2}[pP][sS]:\/\/)(([A-Za-z0-9-~]+)\.)+([A-Za-z0-9-~\/])+$/,
+                                message: '请输入正确的网址'
+                            }
+                        }
+                    },
+                    CusFax: {
+                        validators: {
+                            regexp: {
+                                regexp: /^(\d{3,4}-)?\d{7,8}$/,
+                                message: '请输入正确的传真'
+                            }
+                        }
+                    },
+                    CusBeginIn: {
+                        validators: {
+                            regexp: {
+                                regexp: /^(([0-9]+\.[0-9]*[1-9][0-9]*)|([0-9]*[1-9][0-9]*\.[0-9]+)|([0-9]*[1-9][0-9]*))$/,
+                                message: '请输入正确的期初应收'
+                            }
+                        }
+                    }
+                }
+            }).on('success.form.bv', function (e) {
+                e.preventDefault();
+                var Customers = serializeJson($("form"));
+                Customers.CusDesc = $("[name=CusDesc]").val();
+                Customers.IsDefault = $("[name=IsDefault]").prop("checked");
+                $.ajax({
+                    type: Customers.CusID == "" ? "post" : "put",//如果有编号就put提交，没有post就提交
+                    async: false,
+                    url: "http://localhost:43727/api/Customers",
+                    data: Customers,
+                    success: function (rs) {
+                        if (rs) {
+                            Close();
+                        } else {
+                            layer.msg("操作失败");
+                        }
+                    }
+                });
+            });
+        })
+    </script>
+</body>
+</html>

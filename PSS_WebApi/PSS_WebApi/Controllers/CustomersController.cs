@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Data.Entity.Core.Objects;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -43,7 +44,8 @@ namespace PSS_WebApi.Controllers
                     c.CusTel,
                     c.CusUrl,
                     c.CustomerLevel.CLName,
-                    c.CustomerTypes.CTName
+                    c.CustomerTypes.CTName,
+                    c.IsDefault
                 }).ToListAsync());
             }
         }
@@ -78,8 +80,17 @@ namespace PSS_WebApi.Controllers
                         c.CusTel,
                         c.CusUrl,
                         c.CustomerLevel.CLName,
-                        c.CustomerTypes.CTName
+                        c.CustomerTypes.CTName,
+                        c.IsDefault
                     }).FirstOrDefaultAsync());
+            }
+        }
+        //查询公司名称是否存在
+        public async Task<IHttpActionResult> Get_Customers_SelectIsExistCusName_Async(string CusCompany, string CusID)
+        {
+            using (PSSEntities db = new PSSEntities())
+            {
+                return Ok(new { valid = await db.Customers.Where(c => string.IsNullOrEmpty(CusID) ? (c.CusCompany == CusCompany) : (c.CusCompany == CusCompany && c.CusID.ToString() != CusID)).CountAsync() <= 0 });
             }
         }
         //分页条件查询客户
@@ -93,13 +104,13 @@ namespace PSS_WebApi.Controllers
                         .Where(c => c.CusState == 1)
                         .Where(c => string.IsNullOrEmpty(name) || c.CusName.Contains(name) || c.CusCompany.Contains(name))
                         .Where(c => CLID == 0 || c.CLID == CLID)
-                        .Where(c => CTID == 0 || c.CTID == CLID)
+                        .Where(c => CTID == 0 || c.CTID == CTID)
                         .CountAsync(),
                     rows = await db.Customers
                         .Where(c => c.CusState == 1)
                         .Where(c => string.IsNullOrEmpty(name) || c.CusName.Contains(name) || c.CusCompany.Contains(name))
                         .Where(c => CLID == 0 || c.CLID == CLID)
-                        .Where(c => CTID == 0 || c.CTID == CLID)
+                        .Where(c => CTID == 0 || c.CTID == CTID)
                         .Select(c => new
                         {
                             c.CLID,
@@ -124,10 +135,49 @@ namespace PSS_WebApi.Controllers
                             c.CusTel,
                             c.CusUrl,
                             c.CustomerLevel.CLName,
-                            c.CustomerTypes.CTName
+                            c.CustomerTypes.CTName,
+                            c.IsDefault
                         })
                         .OrderByDescending(c => c.CusID).Skip(offset).Take(limit).ToListAsync()
                 });
+            }
+        }
+        //添加客户
+        public async Task<IHttpActionResult> Post_Customers_Add_Async(Customers customers)
+        {
+            using (PSSEntities db = new PSSEntities())
+            {
+                //获取客户编号
+                ObjectParameter s = new ObjectParameter("no", "");
+                db.proc_Customers(s);
+                customers.CusID = s.Value.ToString();
+                customers.CusState = 1;
+                db.Customers.Add(customers);
+                return Ok(await db.SaveChangesAsync() > 0);
+            }
+        }
+        //修改客户
+        public async Task<IHttpActionResult> Put_Customers_Edit_Async(Customers customers)
+        {
+            using (PSSEntities db = new PSSEntities())
+            {
+                customers.CusState = 1;
+                db.Entry<Customers>(customers).State = EntityState.Modified;
+                return Ok(await db.SaveChangesAsync() > 0);
+            }
+        }
+        //删除客户
+        public async Task<IHttpActionResult> Delete_Customers_Delete_Async(string id)
+        {
+            using (PSSEntities db = new PSSEntities())
+            {
+                var customers = await db.Customers.FindAsync(id);
+                if (customers == null)
+                {
+                    return Ok(0);
+                }
+                db.Customers.Remove(customers);
+                return Ok(await db.SaveChangesAsync() > 0);
             }
         }
     }

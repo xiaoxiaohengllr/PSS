@@ -26,7 +26,7 @@
                 <form id="formSelectDepots" class="form-inline" style="float:left; margin-left:10px;">
                     <div class="form-group">
                         <label for="name">
-                            公司名称或客户名称:
+                            公司或客户名称:
                         </label>
                         <input type="text" name="name" class="form-control" id="name" placeholder="请输入">
                     </div>
@@ -45,7 +45,7 @@
                     <button type="button" id="search" class="btn btn-default">查询</button>
                 </form>
             </div>
-            <table id="customers" class="table table-bordered table-striped table-hover"></table>
+            <table id="customersTable" class="table table-bordered table-striped table-hover"></table>
         </div>
     </div>
     <script src="~/Scripts/jquery-3.2.1.min.js"></script>
@@ -61,7 +61,7 @@
     <script>
         $(function () {
             //绑定表格数据
-            $("#customers").bootstrapTable({
+            $("#customersTable").bootstrapTable({
                 method: "get",
                 url: "http://localhost:43727/api/Customers",
                 undefinedText: "",//当数据为 undefined 时显示的空字符
@@ -104,17 +104,135 @@
                     },
                 ]
             });
-            LoadCustomerLevel();
-            LoadCustomerTypes();
+            LoadCustomerLevel($("#CLID.selectpicker"),0);
+            LoadCustomerTypes($("#CTID.selectpicker"),0);
+            //条件查询
+            $("#search").click(function () {
+                var name = $("#name").val();
+                var CLID = $("#CLID").val();
+                var CTID = $("#CTID").val();
+                $.getJSON("http://localhost:43727/api/Customers?order=asc&offset=0&limit=10&name=" + name + "&CLID=" + CLID + "&CTID=" + CTID, function (data) {
+                    $("#customersTable").bootstrapTable("load", data);
+                });
+            });
+            //添加
+            $("#AddCustomers").click(function () {
+                layer.open({
+                    type: 2,
+                    area: ['600px', '600px'],
+                    scrollbar: false,
+                    title: ['新增客户', 'font-weight:700'],
+                    content: ['/Basic/CustomersEdit.html', 'auto'],
+                    success: function (layero, index) {
+                        var body = layer.getChildFrame("body", index);
+                        $(body).find(":checkbox").iCheck({
+                            checkboxClass: "icheckbox_square-red"
+                        });
+                        LoadCustomerLevel($(body).find("#CLID.selectpicker"));
+                        LoadCustomerTypes($(body).find("#CTID.selectpicker"));
+                    },
+                    end: function () {
+                        //销毁时刷新
+                        $('#customersTable').bootstrapTable("refresh");
+                    }
+                });
+            });
+            //修改
+            $("#EditCustomers").click(function () {
+                var row = $("#customersTable").bootstrapTable("getSelections");
+                if (row.length != 1) {
+                    layer.msg("请选择一条要修改的客户！");
+                    return;
+                }
+                layer.open({
+                    type: 2,
+                    area: ['600px', '600px'],
+                    scrollbar: false,
+                    title: ['修改客户', 'font-weight:700'],
+                    content: ['/Basic/CustomersEdit.html', 'auto'],
+                    success: function (layero, index) {
+                        var body = layer.getChildFrame("body", index);
+                        $(body).find(":checkbox").iCheck({
+                            checkboxClass: "icheckbox_square-red"
+                        });
+                        $.getJSON("http://localhost:43727/api/Customers/" + row[0].CusID, function (data) {
+                            setForm($(body).find("form"), data);
+                            $(body).find(":checkbox").iCheck({
+                                checkboxClass: "icheckbox_square-red"
+                            });
+                            if (data.IsDefault) {
+                                $(body).find(":checkbox").iCheck("check");
+                            }
+                            LoadCustomerLevel($(body).find("#CLID.selectpicker"), data.CLID);
+                            LoadCustomerTypes($(body).find("#CTID.selectpicker"), data.CTID);
+                        });
+                    },
+                    end: function () {
+                        //销毁时刷新
+                        $('#customersTable').bootstrapTable("refresh");
+                    }
+                });
+            });
+            //删除
+            $("#DeleteCustomers").click(function () {
+                var row = $("#customersTable").bootstrapTable("getSelections");
+                if (row.length != 1) {
+                    layer.msg("请选择一条要删除的客户！");
+                    return;
+                }
+                var bool = true;
+                $.ajax({
+                    url: "http://localhost:43727/api/CustomerOrder?CusID=" + row[0].CusID,
+                    type: "get",
+                    async: false,
+                    success: function (data) {
+                        if (data) {
+                            layer.msg("客户下有订单！");
+                            bool = false;
+                        }
+                    }
+                });
+                if (!bool) return false;
+                layer.confirm('您确定要删除此客户吗？', {
+                    btn: ['确定', '取消'], //按钮
+                    icon: 2
+                }, function () {
+                    $.ajax({
+                        url: "http://localhost:43727/api/Customers/" + row[0].CusID,
+                        type: "delete",
+                        success: function (data) {
+                            if (data) {
+                                layer.msg("删除成功！");
+                                $('#customersTable').bootstrapTable("refresh");
+                            } else {
+                                layer.msg("删除失败！");
+                            }
+                        }
+                    });
+                }, function () {
 
+                });
+            });
         });
         //加载客户等级
-        function LoadCustomerLevel() {
-
+        function LoadCustomerLevel(select, check) {
+            $.getJSON("http://localhost:43727/api/CustomerLevel", function (data) {
+                $.each(data, function (i, obj) {
+                    $(select).append(new Option(obj.CLName, obj.CLID));
+                });
+                $(select).selectpicker('refresh');
+                $(select).selectpicker("val", check);
+            });
         }
         //加载客户类型
-        function LoadCustomerTypes() {
-
+        function LoadCustomerTypes(select, check) {
+            $.getJSON("http://localhost:43727/api/CustomerTypes", function (data) {
+                $.each(data, function (i, obj) {
+                    $(select).append(new Option(obj.CTName, obj.CTID));
+                });
+                $(select).selectpicker('refresh');
+                $(select).selectpicker("val", check);
+            });
         }
     </script>
 </body>
