@@ -600,7 +600,6 @@
     <Content Include="Views\Basic\Depots.cshtml" />
     <Content Include="Views\Basic\DepotsEdit.cshtml" />
     <Content Include="Views\Basic\ProductEssentialData.cshtml" />
-    <Content Include="Views\Basic\Bank.cshtml" />
     <Content Include="Views\Basic\ProductLend.cshtml" />
     <Content Include="Views\Basic\ProductLendEdit.cshtml" />
     <Content Include="Views\Basic\Customers.cshtml" />

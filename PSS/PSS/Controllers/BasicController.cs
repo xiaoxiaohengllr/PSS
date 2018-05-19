@@ -53,9 +53,5 @@ namespace PSS.Controllers
         {
             return View();
         }
-        public ActionResult Bank()
-        {
-            return View();
-        }
     }
 }
