@@ -112,6 +112,8 @@
     <Compile Include="Controllers\CustomerTypesController.cs" />
     <Compile Include="Controllers\DepotsController.cs" />
     <Compile Include="Controllers\DepotStockController.cs" />
+    <Compile Include="Controllers\DeptController.cs" />
+    <Compile Include="Controllers\EmpController.cs" />
     <Compile Include="Controllers\ProductColorController.cs" />
     <Compile Include="Controllers\ProductLendController.cs" />
     <Compile Include="Controllers\ProductsController.cs" />

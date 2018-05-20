@@ -63,6 +63,12 @@ namespace PSS.Controllers
         {
             return View();
         }
+        //部门设置页面
+        public ActionResult Dept()
+        {
+            return View();
+        }
+        //商品图片上传
         public ActionResult ProductsImgUpload()
         {
             try

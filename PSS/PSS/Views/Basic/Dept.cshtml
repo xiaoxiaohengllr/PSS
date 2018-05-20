@@ -1,0 +1,297 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title></title>
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/bootstrap-table-develop/dist/bootstrap-table.css" rel="stylesheet" />
+    <link href="~/Content/bootstrap-select.min.css" rel="stylesheet" />
+    <link href="~/layui/css/layui.css" rel="stylesheet" />
+    <link href="~/Content/bootstrapValidator.min.css" rel="stylesheet" />
+</head>
+<body>
+    <div class="panel panel-default">
+        <div class="panel-heading">部门设置</div>
+        <div class="panel-body">
+            <div id="btns" class="btn-group">
+                <button class="btn btn-primary" id="AddDept"><i class="glyphicon glyphicon-save"></i>新增</button>
+                <button class="btn btn-info" id="EditDept"><i class="glyphicon glyphicon-edit"></i>修改</button>
+                <button class="btn btn-danger" id="DeleteDept"><i class="glyphicon glyphicon-remove"></i>删除</button>
+                <form id="formSelectDept" class="form-inline" style="float:left; margin-left:10px;">
+                    <div class="form-group">
+                        <label for="DName">部门名称:</label>
+                        <input type="text" name="DName" class="form-control" id="DName" placeholder="请输入部门名称">
+                    </div>
+                    <button type="button" id="search" class="btn btn-default">查询</button>
+                </form>
+            </div>
+            <table id="deptTable" class="table table-bordered table-striped table-hover"></table>
+        </div>
+    </div>
+    <script src="~/Scripts/jquery-3.2.1.min.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    <script src="~/bootstrap-table-develop/dist/bootstrap-table.js"></script>
+    <script src="~/bootstrap-table-develop/dist/locale/bootstrap-table-zh-CN.min.js"></script>
+    <script src="~/bootstrap-table-develop/dist/extensions/export/bootstrap-table-export.min.js"></script>
+    <script src="~/bootstrap-table-develop/dist/extensions/export/tableExport.js"></script>
+    <script src="~/Scripts/bootstrap-select.min.js"></script>
+    <script src="~/layui/layui.all.js"></script>
+    <script src="~/Scripts/ajaxHelp.js"></script>
+    <script src="~/Scripts/bootstrapValidator.min.js"></script>
+    <script>
+        //关闭弹出层
+        function Close() {
+            layer.closeAll();
+        }
+        $(function () {
+            //绑定表格数据
+            $("#deptTable").bootstrapTable({
+                method: "get",
+                url: "http://localhost:43727/api/Dept",
+                undefinedText: "",//当数据为 undefined 时显示的空字符
+                pagination: true, //表格底部显示分页条
+                paginationLoop: false,//禁用分页条无限循环的功能
+                toolbar: "#btns",
+                sidePagination: "server",
+                showExport: true,
+                pageNumber: 1,
+                pageSize: 10,
+                pageList: [5, 10, 20, "All"],
+                paginationPreText: "上一页",
+                paginationNextText: "下一页",
+                showColumns: true,
+                showRefresh: true,
+                detailView: true,
+                clickToSelect: true,
+                queryParams: function (params) {
+                    params.DName = "";
+                    return params;
+                },
+                columns: [
+                    { checkbox: true },
+                    { field: "DID", title: "部门编号" },
+                    { field: "DName", title: "部门名称" },
+                    { field: "DParentID", title: "上级部门编号" }
+                ]
+            });
+            //绑定搜索
+            $("#search").click(function () {
+                var DName = $("#formSelectDept").find("#DName").val();
+                $.getJSON("http://localhost:43727/api/Dept?order=asc&offset=0&limit=10&DName=" + DName, function (data) {
+                    $("#deptTable").bootstrapTable("load", data);
+                });
+            });
+            //添加
+            $("#AddDept").click(function () {
+                layer.open({
+                    type: 1,
+                    area: ['400px', '260px'],
+                    scrollbar: false,
+                    title: ['新增部门', 'font-weight:700'],
+                    content: ' <div style="margin-left:12px;margin-right:12px"><form id="fromDept"><div class="form-group"><label for="DName">部门名称</label><input type="text" class="form-control" id="DName" name="DName" placeholder="请输入部门名称"></div><div class="form-group"><label for="DParentID">上级部门名称 </label><select id="DParentID" name="DParentID" class="selectpicker form-control" data-style="btn-default"><option value="0">根类型</option></select></div><div class="form-group text-center"><input type="submit" class="btn btn-primary" value="提交"><input type="button" class="btn btn-default" onclick="Close()" value="返回"></div><input type="hidden" id="DID" name="DID" value="" /></form></div>',
+                    success: function (layero, index) {
+                        $.getJSON("http://localhost:43727/api/Dept?DParentID=0", function (data) {
+                            $.each(data, function (i, obj) {
+                                $("#DParentID.selectpicker").append(new Option(obj.DName, obj.DID));
+                            });
+                            $("#DParentID.selectpicker").selectpicker('refresh');
+                        });
+                        $("#fromDept").bootstrapValidator({
+                            message: "必填",//无效
+                            feedbackIcons: { //样式设置
+                                valid: 'glyphicon glyphicon-ok',
+                                invalid: 'glyphicon glyphicon-remove',
+                                validating: 'glyphicon glyphicon-refresh'
+                            },
+                            fields: {
+                                DName: {
+                                    validators: {
+                                        notEmpty: {
+                                            message: "部门名称不能为空"
+                                        },
+                                        remote: {
+                                            url: "http://localhost:43727/api/Dept",
+                                            async: false,
+                                            data: function (validator) {
+                                                return {
+                                                    DID: $("#fromDept").find("#DID").val()
+                                                };
+                                            },
+                                            message: "部门名称已存在",
+                                            delay: 1000
+                                        }
+                                    }
+                                }
+                            }
+                        }).on('success.form.bv', function (e) {
+                            e.preventDefault();
+                            var Dept = serializeJson($("#fromDept"));
+                            $.ajax({
+                                type: "Post",
+                                async: false,
+                                url: "http://localhost:43727/api/Dept",
+                                data: Dept,
+                                success: function (rs) {
+                                    if (rs) {
+                                        Close();
+                                    } else {
+                                        layer.msg("操作失败");
+                                    }
+                                }
+                            });
+                        });
+                    },
+                    end: function () {
+                        //销毁时刷新
+                        $('#deptTable').bootstrapTable("refresh");
+                    }
+                });
+            });
+            //修改
+            $("#EditDept").click(function () {
+                var row = $("#deptTable").bootstrapTable("getSelections");
+                if (row.length != 1) {
+                    layer.msg("请选择一条要修改的部门！");
+                    return;
+                }
+                layer.open({
+                    type: 1,
+                    area: ['400px', '260px'],
+                    scrollbar: false,
+                    title: ['修改部门', 'font-weight:700'],
+                    content: ' <div style="margin-left:12px;margin-right:12px"><form id="fromDept"><div class="form-group"><label for="DName">部门名称</label><input type="text" class="form-control" id="DName" name="DName" placeholder="请输入部门名称"></div><div class="form-group"><label for="DParentID">上级部门名称 </label><select id="DParentID" name="DParentID" class="selectpicker form-control" data-style="btn-default"><option value="0">根类型</option></select></div><div class="form-group text-center"><input type="submit" class="btn btn-primary" value="提交"><input type="button" class="btn btn-default" onclick="Close()" value="返回"></div><input type="hidden" id="DID" name="DID" value="" /></form></div>',
+                    success: function (layero, index) {
+                        $.ajax({
+                            type: "get",
+                            url: "http://localhost:43727/api/Dept?DParentID=0",
+                            async: false,
+                            success: function (data) {
+                                $.each(data, function (i, obj) {
+                                    $("#DParentID.selectpicker").append(new Option(obj.DName, obj.DID));
+                                });
+                                $("#DParentID.selectpicker").selectpicker('refresh');
+                            }
+                        });
+                        $.getJSON("http://localhost:43727/api/Dept/" + row[0].DID, function (data) {
+                            $.getJSON("http://localhost:43727/api/Dept?DParentID=" + data.DID, function (rs) {
+                                if (rs.length > 0) {
+                                    $("#fromDept").find("#DParentID").prop("disabled", "disabled");
+                                }
+                            });
+                            $("#fromDept").find("#DParentID").selectpicker("val", data.DParentID);
+                            $("#fromDept").find("#DName").val(data.DName);
+                            $("#fromDept").find("#DID").val(data.DID);
+                        });
+                        $("#fromDept").bootstrapValidator({
+                            message: "必填",//无效
+                            feedbackIcons: { //样式设置
+                                valid: 'glyphicon glyphicon-ok',
+                                invalid: 'glyphicon glyphicon-remove',
+                                validating: 'glyphicon glyphicon-refresh'
+                            },
+                            fields: {
+                                DName: {
+                                    validators: {
+                                        notEmpty: {
+                                            message: "部门名称不能为空"
+                                        },
+                                        remote: {
+                                            url: "http://localhost:43727/api/Dept",
+                                            async: false,
+                                            data: function (validator) {
+                                                return {
+                                                    DID: $("#fromDept").find("#DID").val()
+                                                };
+                                            },
+                                            message: "部门名称已存在",
+                                            delay: 1000
+                                        }
+                                    }
+                                }
+                            }
+                        }).on('success.form.bv', function (e) {
+                            e.preventDefault();
+                            var Dept = serializeJson($("#fromDept"));
+                            $.ajax({
+                                type: "put",
+                                async: false,
+                                url: "http://localhost:43727/api/Dept",
+                                data: Dept,
+                                success: function (rs) {
+                                    if (rs) {
+                                        Close();
+                                    } else {
+                                        layer.msg("操作失败");
+                                    }
+                                }
+                            });
+                        });
+                    },
+                    end: function () {
+                        //销毁时刷新
+                        $('#deptTable').bootstrapTable("refresh");
+                    }
+                });
+            });
+            //删除
+            $("#DeleteDept").click(function () {
+                var row = $("#deptTable").bootstrapTable("getSelections");
+                if (row.length != 1) {
+                    layer.msg("请选择一条要删除的商品！");
+                    return;
+                }
+                var bool = true;
+                $.ajax({
+                    url: "http://localhost:43727/api/Dept?DParentID=" + row[0].DID,
+                    type: "get",
+                    async: false,
+                    success: function (data) {
+                        if (data.length > 0) {
+                            layer.msg("此部门下还有部门，不能删除！");
+                            bool = false;
+                        }
+                    }
+                });
+                if (!bool) return false;
+                $.ajax({
+                    url: "http://localhost:43727/api/Emp?DID=" + row[0].DID,
+                    type: "get",
+                    async: false,
+                    success: function (data) {
+                        if (data) {
+                            layer.msg("此部门下还有员工，不能删除！");
+                            bool = false;
+                        }
+                    }
+                });
+                if (!bool) return false;
+                layer.confirm('您确定要删除此部门吗？', {
+                    btn: ['确定', '取消'], //按钮
+                    icon: 2
+                }, function () {
+                    $.ajax({
+                        url: "http://localhost:43727/api/Dept/" + row[0].DID,
+                        type: "delete",
+                        success: function (data) {
+                            if (data) {
+                                layer.msg("删除成功！");
+                                $('#deptTable').bootstrapTable("refresh");
+                            } else {
+                                layer.msg("删除失败！");
+                            }
+                        }
+                    });
+                }, function () {
+
+                });
+            });
+        });
+    </script>
+</body>
+</html>
