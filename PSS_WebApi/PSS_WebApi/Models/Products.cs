@@ -29,7 +29,7 @@ namespace PSS_WebApi.Models
         public Nullable<decimal> ProPrice { get; set; }
         public string ProDesc { get; set; }
         public Nullable<int> ProState { get; set; }
-        public byte[] ProImg { get; set; }
+        public string ProImg { get; set; }
     
         public virtual ProductColor ProductColor { get; set; }
         public virtual ProductSpec ProductSpec { get; set; }

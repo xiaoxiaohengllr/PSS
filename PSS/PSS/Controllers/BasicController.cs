@@ -53,5 +53,37 @@ namespace PSS.Controllers
         {
             return View();
         }
+        //商品资料页面
+        public ActionResult Products()
+        {
+            return View();
+        }
+        //添加和修改商品资料页面
+        public ActionResult ProductsEdit()
+        {
+            return View();
+        }
+        public ActionResult ProductsImgUpload()
+        {
+            try
+            {
+                //获得文件对象
+                HttpPostedFileBase hpfb = Request.Files[0];
+                string fileName = System.Guid.NewGuid().ToString();
+                //设置保存路径
+                string name = string.Format("{0}{1}{2}",
+                      Server.MapPath("~/images/"),
+                      fileName,
+                      System.IO.Path.GetExtension(hpfb.FileName)
+                   );
+                //保存文件
+                hpfb.SaveAs(name);
+                return Json(new { file = fileName + System.IO.Path.GetExtension(hpfb.FileName) }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception)
+            {
+                return Json(new { file = "" }, JsonRequestBehavior.AllowGet);
+            }
+        }
     }
 }

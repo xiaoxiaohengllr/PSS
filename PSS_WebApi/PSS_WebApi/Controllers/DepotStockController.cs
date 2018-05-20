@@ -22,5 +22,13 @@ namespace PSS_WebApi.Controllers
                 return Ok(await db.DepotStock.Where(ds => ds.DepotID == depotId).CountAsync() > 0);
             }
         }
+        //判断商品是否存在库存
+        public async Task<IHttpActionResult> Get_DepotStock_DepotStockIsExisProduct_Async(int ProID)
+        {
+            using (PSSEntities db = new PSSEntities())
+            {
+                return Ok(await db.DepotStock.Where(ds => ds.ProID == ProID).CountAsync() > 0);
+            }
+        }
     }
 }

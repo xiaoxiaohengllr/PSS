@@ -604,6 +604,8 @@
     <Content Include="Views\Basic\ProductLendEdit.cshtml" />
     <Content Include="Views\Basic\Customers.cshtml" />
     <Content Include="Views\Basic\CustomersEdit.cshtml" />
+    <Content Include="Views\Basic\Products.cshtml" />
+    <Content Include="Views\Basic\ProductsEdit.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -613,6 +615,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="images\" />
     <Folder Include="Models\" />
   </ItemGroup>
   <ItemGroup>

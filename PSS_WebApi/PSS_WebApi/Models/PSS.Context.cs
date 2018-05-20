@@ -121,6 +121,11 @@ namespace PSS_WebApi.Models
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("proc_Cust_no", no);
         }
     
+        public virtual int proc_Customers(ObjectParameter no)
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("proc_Customers", no);
+        }
+    
         public virtual int proc_Depots(ObjectParameter no)
         {
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("proc_Depots", no);
@@ -212,11 +217,6 @@ namespace PSS_WebApi.Models
                 new ObjectParameter("strWhere", typeof(string));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("PS_proc_CommonPager", tblNameParameter, fldNameParameter, pageSizeParameter, pageIndexParameter, isCountParameter, orderTypeParameter, strWhereParameter);
-        }
-    
-        public virtual int proc_Customers(ObjectParameter no)
-        {
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("proc_Customers", no);
         }
     }
 }

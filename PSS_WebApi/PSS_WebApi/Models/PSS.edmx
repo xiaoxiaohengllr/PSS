@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-    <Schema Namespace="PSSModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2008" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+      <Schema Namespace="PSSModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2008" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="Bank">
           <Key>
             <PropertyRef Name="BankID" />
@@ -439,7 +439,7 @@
           <Property Name="ProPrice" Type="numeric" Precision="10" Scale="2" />
           <Property Name="ProDesc" Type="nvarchar" MaxLength="2000" />
           <Property Name="ProState" Type="int" />
-          <Property Name="ProImg" Type="image" />
+          <Property Name="ProImg" Type="varchar" MaxLength="50" />
         </EntityType>
         <EntityType Name="ProductSpec">
           <Key>
@@ -915,7 +915,8 @@
             <End Role="QuotePrice" EntitySet="QuotePrice" />
           </AssociationSet>
         </EntityContainer>
-      </Schema></edmx:StorageModels>
+      </Schema>
+    </edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="PSSModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
@@ -987,7 +988,7 @@
           <Property Name="CLID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="CLName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="CLAgio" Type="Int32" />
-          <NavigationProperty Name="Customers" Relationship="PSSModel.FK_Customers_CustomerLevel" FromRole="CustomerLevel" ToRole="Customers" />
+          <NavigationProperty Name="Customers" Relationship="Self.FK_Customers_CustomerLevel" FromRole="CustomerLevel" ToRole="Customers" />
         </EntityType>
         <EntityType Name="CustomerOrder">
           <Key>
@@ -1041,8 +1042,8 @@
           <Property Name="CusSorce" Type="Int32" />
           <Property Name="IsDefault" Type="Boolean" />
           <Property Name="CusState" Type="Int32" />
-          <NavigationProperty Name="CustomerLevel" Relationship="PSSModel.FK_Customers_CustomerLevel" FromRole="Customers" ToRole="CustomerLevel" />
-          <NavigationProperty Name="CustomerTypes" Relationship="PSSModel.FK_Customers_CustomerTypes" FromRole="Customers" ToRole="CustomerTypes" />
+          <NavigationProperty Name="CustomerLevel" Relationship="Self.FK_Customers_CustomerLevel" FromRole="Customers" ToRole="CustomerLevel" />
+          <NavigationProperty Name="CustomerTypes" Relationship="Self.FK_Customers_CustomerTypes" FromRole="Customers" ToRole="CustomerTypes" />
         </EntityType>
         <EntityType Name="CustomerTypes">
           <Key>
@@ -1052,7 +1053,7 @@
           <Property Name="CTParentID" Type="Int32" />
           <Property Name="CTName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="CTDes" Type="String" MaxLength="1000" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="Customers" Relationship="PSSModel.FK_Customers_CustomerTypes" FromRole="CustomerTypes" ToRole="Customers" />
+          <NavigationProperty Name="Customers" Relationship="Self.FK_Customers_CustomerTypes" FromRole="CustomerTypes" ToRole="Customers" />
         </EntityType>
         <EntityType Name="Depots">
           <Key>
@@ -1311,7 +1312,7 @@
           </Key>
           <Property Name="PCID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="PCName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="Products" Relationship="PSSModel.FK_Products_ProductColor" FromRole="ProductColor" ToRole="Products" />
+          <NavigationProperty Name="Products" Relationship="Self.FK_Products_ProductColor" FromRole="ProductColor" ToRole="Products" />
         </EntityType>
         <EntityType Name="ProductLend">
           <Key>
@@ -1360,11 +1361,11 @@
           <Property Name="ProPrice" Type="Decimal" Precision="10" Scale="2" />
           <Property Name="ProDesc" Type="String" MaxLength="2000" FixedLength="false" Unicode="true" />
           <Property Name="ProState" Type="Int32" />
-          <Property Name="ProImg" Type="Binary" MaxLength="Max" FixedLength="false" />
-          <NavigationProperty Name="ProductColor" Relationship="PSSModel.FK_Products_ProductColor" FromRole="Products" ToRole="ProductColor" />
-          <NavigationProperty Name="ProductSpec" Relationship="PSSModel.FK_Products_ProductSpec" FromRole="Products" ToRole="ProductSpec" />
-          <NavigationProperty Name="ProductTypes" Relationship="PSSModel.FK_Products_ProductTypes" FromRole="Products" ToRole="ProductTypes" />
-          <NavigationProperty Name="ProductUnit" Relationship="PSSModel.FK_Products_ProductUnit" FromRole="Products" ToRole="ProductUnit" />
+          <Property Name="ProImg" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="ProductColor" Relationship="Self.FK_Products_ProductColor" FromRole="Products" ToRole="ProductColor" />
+          <NavigationProperty Name="ProductSpec" Relationship="Self.FK_Products_ProductSpec" FromRole="Products" ToRole="ProductSpec" />
+          <NavigationProperty Name="ProductTypes" Relationship="Self.FK_Products_ProductTypes" FromRole="Products" ToRole="ProductTypes" />
+          <NavigationProperty Name="ProductUnit" Relationship="Self.FK_Products_ProductUnit" FromRole="Products" ToRole="ProductUnit" />
         </EntityType>
         <EntityType Name="ProductSpec">
           <Key>
@@ -1372,7 +1373,7 @@
           </Key>
           <Property Name="PSID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="PSName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="Products" Relationship="PSSModel.FK_Products_ProductSpec" FromRole="ProductSpec" ToRole="Products" />
+          <NavigationProperty Name="Products" Relationship="Self.FK_Products_ProductSpec" FromRole="ProductSpec" ToRole="Products" />
         </EntityType>
         <EntityType Name="ProductTypes">
           <Key>
@@ -1382,7 +1383,7 @@
           <Property Name="PTParentID" Type="Int32" />
           <Property Name="PTName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="PTDes" Type="String" MaxLength="1000" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="Products" Relationship="PSSModel.FK_Products_ProductTypes" FromRole="ProductTypes" ToRole="Products" />
+          <NavigationProperty Name="Products" Relationship="Self.FK_Products_ProductTypes" FromRole="ProductTypes" ToRole="Products" />
         </EntityType>
         <EntityType Name="ProductUnit">
           <Key>
@@ -1390,7 +1391,7 @@
           </Key>
           <Property Name="PUID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="PUName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="Products" Relationship="PSSModel.FK_Products_ProductUnit" FromRole="ProductUnit" ToRole="Products" />
+          <NavigationProperty Name="Products" Relationship="Self.FK_Products_ProductUnit" FromRole="ProductUnit" ToRole="Products" />
         </EntityType>
         <EntityType Name="QuotePrice">
           <Key>
@@ -1590,6 +1591,30 @@
           <Property Name="UsersID" Type="Int32" />
           <Property Name="RoleID" Type="Int32" />
         </EntityType>
+        <Association Name="FK_Customers_CustomerLevel">
+          <End Role="CustomerLevel" Type="Self.CustomerLevel" Multiplicity="0..1" />
+          <End Role="Customers" Type="Self.Customers" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CustomerLevel">
+              <PropertyRef Name="CLID" />
+            </Principal>
+            <Dependent Role="Customers">
+              <PropertyRef Name="CLID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Customers_CustomerTypes">
+          <End Role="CustomerTypes" Type="Self.CustomerTypes" Multiplicity="0..1" />
+          <End Role="Customers" Type="Self.Customers" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CustomerTypes">
+              <PropertyRef Name="CTID" />
+            </Principal>
+            <Dependent Role="Customers">
+              <PropertyRef Name="CTID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_Emp_Dept">
           <End Role="Dept" Type="Self.Dept" Multiplicity="1" />
           <End Role="Emp" Type="Self.Emp" Multiplicity="*" />
@@ -1599,6 +1624,54 @@
             </Principal>
             <Dependent Role="Emp">
               <PropertyRef Name="Did" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Products_ProductColor">
+          <End Role="ProductColor" Type="Self.ProductColor" Multiplicity="0..1" />
+          <End Role="Products" Type="Self.Products" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ProductColor">
+              <PropertyRef Name="PCID" />
+            </Principal>
+            <Dependent Role="Products">
+              <PropertyRef Name="PCID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Products_ProductSpec">
+          <End Role="ProductSpec" Type="Self.ProductSpec" Multiplicity="0..1" />
+          <End Role="Products" Type="Self.Products" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ProductSpec">
+              <PropertyRef Name="PSID" />
+            </Principal>
+            <Dependent Role="Products">
+              <PropertyRef Name="PSID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Products_ProductTypes">
+          <End Role="ProductTypes" Type="Self.ProductTypes" Multiplicity="0..1" />
+          <End Role="Products" Type="Self.Products" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ProductTypes">
+              <PropertyRef Name="PTID" />
+            </Principal>
+            <Dependent Role="Products">
+              <PropertyRef Name="PTID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Products_ProductUnit">
+          <End Role="ProductUnit" Type="Self.ProductUnit" Multiplicity="0..1" />
+          <End Role="Products" Type="Self.Products" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ProductUnit">
+              <PropertyRef Name="PUID" />
+            </Principal>
+            <Dependent Role="Products">
+              <PropertyRef Name="PUID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -1671,16 +1744,40 @@
           <EntitySet Name="Stocks" EntityType="Self.Stocks" />
           <EntitySet Name="Users" EntityType="Self.Users" />
           <EntitySet Name="UsersRole" EntityType="Self.UsersRole" />
+          <AssociationSet Name="FK_Customers_CustomerLevel" Association="Self.FK_Customers_CustomerLevel">
+            <End Role="CustomerLevel" EntitySet="CustomerLevel" />
+            <End Role="Customers" EntitySet="Customers" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Customers_CustomerTypes" Association="Self.FK_Customers_CustomerTypes">
+            <End Role="CustomerTypes" EntitySet="CustomerTypes" />
+            <End Role="Customers" EntitySet="Customers" />
+          </AssociationSet>
           <AssociationSet Name="FK_Emp_Dept" Association="Self.FK_Emp_Dept">
             <End Role="Dept" EntitySet="Dept" />
             <End Role="Emp" EntitySet="Emp" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Products_ProductColor" Association="Self.FK_Products_ProductColor">
+            <End Role="ProductColor" EntitySet="ProductColor" />
+            <End Role="Products" EntitySet="Products" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Products_ProductSpec" Association="Self.FK_Products_ProductSpec">
+            <End Role="ProductSpec" EntitySet="ProductSpec" />
+            <End Role="Products" EntitySet="Products" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Products_ProductTypes" Association="Self.FK_Products_ProductTypes">
+            <End Role="ProductTypes" EntitySet="ProductTypes" />
+            <End Role="Products" EntitySet="Products" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Products_ProductUnit" Association="Self.FK_Products_ProductUnit">
+            <End Role="ProductUnit" EntitySet="ProductUnit" />
+            <End Role="Products" EntitySet="Products" />
           </AssociationSet>
           <AssociationSet Name="FK_QuotePrice_Users" Association="Self.FK_QuotePrice_Users">
             <End Role="Users" EntitySet="Users" />
             <End Role="QuotePrice" EntitySet="QuotePrice" />
           </AssociationSet>
           <FunctionImport Name="proc_CFNO">
-          <Parameter Name="no" Mode="InOut" Type="String" />
+            <Parameter Name="no" Mode="InOut" Type="String" />
           </FunctionImport>
           <FunctionImport Name="proc_common_create_flowNo">
             <Parameter Name="tableName" Mode="In" Type="String" />
@@ -1689,49 +1786,52 @@
             <Parameter Name="no" Mode="InOut" Type="String" />
           </FunctionImport>
           <FunctionImport Name="proc_CPNO">
-          <Parameter Name="no" Mode="InOut" Type="String" />
+            <Parameter Name="no" Mode="InOut" Type="String" />
           </FunctionImport>
           <FunctionImport Name="proc_CusOrder">
-          <Parameter Name="no" Mode="InOut" Type="String" />
+            <Parameter Name="no" Mode="InOut" Type="String" />
           </FunctionImport>
           <FunctionImport Name="proc_Cust_no">
-          <Parameter Name="no" Mode="InOut" Type="String" />
+            <Parameter Name="no" Mode="InOut" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="proc_Customers">
+            <Parameter Name="no" Mode="InOut" Type="String" />
           </FunctionImport>
           <FunctionImport Name="proc_Depots">
-          <Parameter Name="No" Mode="InOut" Type="String" />
+            <Parameter Name="No" Mode="InOut" Type="String" />
           </FunctionImport>
           <FunctionImport Name="proc_Losts">
-          <Parameter Name="no" Mode="InOut" Type="String" />
+            <Parameter Name="no" Mode="InOut" Type="String" />
           </FunctionImport>
           <FunctionImport Name="proc_PayOffs">
-          <Parameter Name="no" Mode="InOut" Type="String" />
+            <Parameter Name="no" Mode="InOut" Type="String" />
           </FunctionImport>
           <FunctionImport Name="proc_ProductLend">
-          <Parameter Name="no" Mode="InOut" Type="String" />
+            <Parameter Name="no" Mode="InOut" Type="String" />
           </FunctionImport>
           <FunctionImport Name="proc_ProID">
-          <Parameter Name="no" Mode="InOut" Type="String" />
+            <Parameter Name="no" Mode="InOut" Type="String" />
           </FunctionImport>
           <FunctionImport Name="proc_SaleReturn">
-          <Parameter Name="no" Mode="InOut" Type="String" />
+            <Parameter Name="no" Mode="InOut" Type="String" />
           </FunctionImport>
           <FunctionImport Name="proc_SCNO">
-          <Parameter Name="no" Mode="InOut" Type="String" />
+            <Parameter Name="no" Mode="InOut" Type="String" />
           </FunctionImport>
           <FunctionImport Name="proc_SDNO">
-          <Parameter Name="no" Mode="InOut" Type="String" />
+            <Parameter Name="no" Mode="InOut" Type="String" />
           </FunctionImport>
           <FunctionImport Name="proc_SLNO">
-          <Parameter Name="no" Mode="InOut" Type="String" />
+            <Parameter Name="no" Mode="InOut" Type="String" />
           </FunctionImport>
           <FunctionImport Name="proc_StID">
-          <Parameter Name="no" Mode="InOut" Type="String" />
+            <Parameter Name="no" Mode="InOut" Type="String" />
           </FunctionImport>
           <FunctionImport Name="proc_StockInDepot">
-          <Parameter Name="no" Mode="InOut" Type="String" />
+            <Parameter Name="no" Mode="InOut" Type="String" />
           </FunctionImport>
           <FunctionImport Name="proc_StockOutDepot">
-          <Parameter Name="no" Mode="InOut" Type="String" />
+            <Parameter Name="no" Mode="InOut" Type="String" />
           </FunctionImport>
           <FunctionImport Name="PS_proc_CommonPager">
             <Parameter Name="tblName" Mode="In" Type="String" />
@@ -1742,106 +1842,7 @@
             <Parameter Name="OrderType" Mode="In" Type="Boolean" />
             <Parameter Name="strWhere" Mode="In" Type="String" />
           </FunctionImport>
-          <AssociationSet Name="FK_Customers_CustomerLevel" Association="PSSModel.FK_Customers_CustomerLevel">
-            <End Role="CustomerLevel" EntitySet="CustomerLevel" />
-            <End Role="Customers" EntitySet="Customers" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Customers_CustomerTypes" Association="PSSModel.FK_Customers_CustomerTypes">
-            <End Role="CustomerTypes" EntitySet="CustomerTypes" />
-            <End Role="Customers" EntitySet="Customers" />
-          </AssociationSet>
-          <FunctionImport Name="proc_Customers">
-          <Parameter Name="no" Mode="InOut" Type="String" />
-          </FunctionImport>
-          <AssociationSet Name="FK_Products_ProductColor" Association="PSSModel.FK_Products_ProductColor">
-            <End Role="ProductColor" EntitySet="ProductColor" />
-            <End Role="Products" EntitySet="Products" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Products_ProductSpec" Association="PSSModel.FK_Products_ProductSpec">
-            <End Role="ProductSpec" EntitySet="ProductSpec" />
-            <End Role="Products" EntitySet="Products" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Products_ProductTypes" Association="PSSModel.FK_Products_ProductTypes">
-            <End Role="ProductTypes" EntitySet="ProductTypes" />
-            <End Role="Products" EntitySet="Products" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Products_ProductUnit" Association="PSSModel.FK_Products_ProductUnit">
-            <End Role="ProductUnit" EntitySet="ProductUnit" />
-            <End Role="Products" EntitySet="Products" />
-          </AssociationSet>
         </EntityContainer>
-        <Association Name="FK_Customers_CustomerLevel">
-          <End Type="PSSModel.CustomerLevel" Role="CustomerLevel" Multiplicity="0..1" />
-          <End Type="PSSModel.Customers" Role="Customers" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="CustomerLevel">
-              <PropertyRef Name="CLID" />
-            </Principal>
-            <Dependent Role="Customers">
-              <PropertyRef Name="CLID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Customers_CustomerTypes">
-          <End Type="PSSModel.CustomerTypes" Role="CustomerTypes" Multiplicity="0..1" />
-          <End Type="PSSModel.Customers" Role="Customers" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="CustomerTypes">
-              <PropertyRef Name="CTID" />
-            </Principal>
-            <Dependent Role="Customers">
-              <PropertyRef Name="CTID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Products_ProductColor">
-          <End Type="PSSModel.ProductColor" Role="ProductColor" Multiplicity="0..1" />
-          <End Type="PSSModel.Products" Role="Products" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="ProductColor">
-              <PropertyRef Name="PCID" />
-            </Principal>
-            <Dependent Role="Products">
-              <PropertyRef Name="PCID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Products_ProductSpec">
-          <End Type="PSSModel.ProductSpec" Role="ProductSpec" Multiplicity="0..1" />
-          <End Type="PSSModel.Products" Role="Products" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="ProductSpec">
-              <PropertyRef Name="PSID" />
-            </Principal>
-            <Dependent Role="Products">
-              <PropertyRef Name="PSID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Products_ProductTypes">
-          <End Type="PSSModel.ProductTypes" Role="ProductTypes" Multiplicity="0..1" />
-          <End Type="PSSModel.Products" Role="Products" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="ProductTypes">
-              <PropertyRef Name="PTID" />
-            </Principal>
-            <Dependent Role="Products">
-              <PropertyRef Name="PTID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Products_ProductUnit">
-          <End Type="PSSModel.ProductUnit" Role="ProductUnit" Multiplicity="0..1" />
-          <End Type="PSSModel.Products" Role="Products" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="ProductUnit">
-              <PropertyRef Name="PUID" />
-            </Principal>
-            <Dependent Role="Products">
-              <PropertyRef Name="PUID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -2564,6 +2565,7 @@
           <FunctionImportMapping FunctionImportName="proc_CPNO" FunctionName="PSSModel.Store.proc_CPNO" />
           <FunctionImportMapping FunctionImportName="proc_CusOrder" FunctionName="PSSModel.Store.proc_CusOrder" />
           <FunctionImportMapping FunctionImportName="proc_Cust_no" FunctionName="PSSModel.Store.proc_Cust_no" />
+          <FunctionImportMapping FunctionImportName="proc_Customers" FunctionName="PSSModel.Store.proc_Customers" />
           <FunctionImportMapping FunctionImportName="proc_Depots" FunctionName="PSSModel.Store.proc_Depots" />
           <FunctionImportMapping FunctionImportName="proc_Losts" FunctionName="PSSModel.Store.proc_Losts" />
           <FunctionImportMapping FunctionImportName="proc_PayOffs" FunctionName="PSSModel.Store.proc_PayOffs" />
@@ -2577,7 +2579,6 @@
           <FunctionImportMapping FunctionImportName="proc_StockInDepot" FunctionName="PSSModel.Store.proc_StockInDepot" />
           <FunctionImportMapping FunctionImportName="proc_StockOutDepot" FunctionName="PSSModel.Store.proc_StockOutDepot" />
           <FunctionImportMapping FunctionImportName="PS_proc_CommonPager" FunctionName="PSSModel.Store.PS_proc_CommonPager" />
-          <FunctionImportMapping FunctionImportName="proc_Customers" FunctionName="PSSModel.Store.proc_Customers" />
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

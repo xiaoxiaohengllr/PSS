@@ -1,0 +1,259 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title></title>
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/bootstrap-table-develop/dist/bootstrap-table.css" rel="stylesheet" />
+    <link href="~/Content/bootstrap-select.min.css" rel="stylesheet" />
+    <link href="~/layui/css/layui.css" rel="stylesheet" />
+</head>
+<body>
+    <div class="panel panel-default">
+        <div class="panel-heading">商品资料</div>
+        <div class="panel-body">
+            <div id="btns" class="btn-group">
+                <button class="btn btn-primary" id="AddProducts"><i class="glyphicon glyphicon-save"></i>新增</button>
+                <button class="btn btn-info" id="EditProducts"><i class="glyphicon glyphicon-edit"></i>修改</button>
+                <button class="btn btn-danger" id="DeleteProducts"><i class="glyphicon glyphicon-remove"></i>删除</button>
+                <form id="formSelectProducts" class="form-inline" style="float:left; margin-left:10px;">
+                    <div class="form-group">
+                        <label for="name">商品名称或简拼:</label>
+                        <input type="text" name="name" class="form-control" id="name" placeholder="请输入商品名称或简拼">
+                    </div>
+                    <div class="form-group">
+                        <label for="PTID">商品类别:</label>
+                        <select id="PTID" name="PTID" class="selectpicker" data-style="btn-default">
+                            <option value="-1">所有商品类型</option>
+                        </select>
+                    </div>
+                    <button type="button" id="search" class="btn btn-default">查询</button>
+                </form>
+            </div>
+            <table id="productsTable" class="table table-bordered table-striped table-hover"></table>
+        </div>
+    </div>
+    <script src="~/Scripts/jquery-3.2.1.min.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    <script src="~/bootstrap-table-develop/dist/bootstrap-table.js"></script>
+    <script src="~/bootstrap-table-develop/dist/locale/bootstrap-table-zh-CN.min.js"></script>
+    <script src="~/bootstrap-table-develop/dist/extensions/export/bootstrap-table-export.min.js"></script>
+    <script src="~/bootstrap-table-develop/dist/extensions/export/tableExport.js"></script>
+    <script src="~/Scripts/bootstrap-select.min.js"></script>
+    <script src="~/layui/layui.all.js"></script>
+    <script src="~/Scripts/ajaxHelp.js"></script>
+    <script>
+        $(function () {
+            //绑定表格数据
+            $("#productsTable").bootstrapTable({
+                method: "get",
+                url: "http://localhost:43727/api/Products",
+                undefinedText: "",//当数据为 undefined 时显示的空字符
+                pagination: true, //表格底部显示分页条
+                paginationLoop: false,//禁用分页条无限循环的功能
+                toolbar: "#btns",
+                sidePagination: "server",
+                showExport: true,
+                pageNumber: 1,
+                pageSize: 10,
+                pageList: [5, 10, 20, "All"],
+                paginationPreText: "上一页",
+                paginationNextText: "下一页",
+                showColumns: true,
+                showRefresh: true,
+                detailView: true,
+                clickToSelect: true,
+                detailFormatter: function (index, row) {
+                    return '<table class="container-fluid"><tr><td><label>单位:</label> &nbsp; <span>' + row.PUName + '</span></td><td><label>规格:</label> &nbsp; <span>' + row.PSName + '</span></td><td><label>颜色:</label> &nbsp; <span>' + row.PCName + '</span></td><td><label>条码:</label> &nbsp; <span>' + row.ProTM + '</span></td><td><label>库存上限:</label> &nbsp; <span>' + row.ProMax + '</span></td><td><label>库存下限:</label> &nbsp; <span>' + row.ProMin + '</span></td></tr><tr><td colspan="3"><label>备注:</label> &nbsp; <span>' + row.ProDesc + '</span></td><td colspan="3"><label>图片:</label> &nbsp; <img style="width:20px;height:20px" src="/images/' + row.ProImg + '"/></td></tr></table>';
+                },
+                queryParams: function (params) {
+                    params.name = "";
+                    params.PTID = -1;
+                    return params;
+                },
+                columns: [
+                    { checkbox: true },
+                    { field: "ProID", title: "商品编号" },
+                    { field: "ProName", title: "商品名称" },
+                    { field: "ProJP", title: "拼音简拼" },
+                    { field: "PTName", title: "商品类别" },
+                    { field: "ProInPrice", title: "预设进价" },
+                    { field: "ProPrice", title: "售价" },
+                    { field: "ProWorkShop", title: "生产厂家" }
+                ]
+            });
+            //绑定商品类型
+            $.ajax({
+                url: "http://localhost:43727/api/ProductTypes",
+                type: "get",
+                async: false,
+                success: function (data) {
+                    $.each(data, function (index, oneObj) {
+                        $("#PTID.selectpicker").append(new Option(oneObj.PTName, oneObj.PTID));
+                    });
+                }
+            });
+            $("#PTID.selectpicker").selectpicker('refresh');
+            //绑定搜索
+            $("#search").click(function () {
+                var name = $("#name").val();
+                var PTID = $("#PTID").val();
+                $.getJSON("http://localhost:43727/api/Products?order=asc&offset=0&limit=10&name=" + name + "&PTID=" + PTID, function (data) {
+                    $("#productsTable").bootstrapTable("load", data);
+                });
+            });
+            //添加
+            $("#AddProducts").click(function () {
+                layer.open({
+                    type: 2,
+                    area: ['600px', '600px'],
+                    scrollbar: false,
+                    title: ['新增商品', 'font-weight:700'],
+                    content: ['/Basic/ProductsEdit.html', 'auto'],
+                    success: function (layero, index) {
+                        var body = layer.getChildFrame("body", index);
+                        //查询商品类型
+                        $.getJSON("http://localhost:43727/api/ProductTypes", function (data) {
+                            $.each(data, function (i, obj) {
+                                $(body).find("#PTID.selectpicker").append(new Option(obj.PTName, obj.PTID));
+                            });
+                            $(body).find("#PTID.selectpicker").selectpicker('refresh');
+                        });
+                        //查询商品颜色
+                        $.getJSON("http://localhost:43727/api/ProductColor", function (data) {
+                            $.each(data, function (i, obj) {
+                                $(body).find("#PCID.selectpicker").append(new Option(obj.PCName, obj.PCID));
+                            });
+                            $(body).find("#PCID.selectpicker").selectpicker('refresh');
+                        });
+                        //查询商品单位
+                        $.getJSON("http://localhost:43727/api/ProductUnit", function (data) {
+                            $.each(data, function (i, obj) {
+                                $(body).find("#PUID.selectpicker").append(new Option(obj.PUName, obj.PUID));
+                            });
+                            $(body).find("#PUID.selectpicker").selectpicker('refresh');
+                        });
+                        //查询商品规格
+                        $.getJSON("http://localhost:43727/api/ProductSpec", function (data) {
+                            $.each(data, function (i, obj) {
+                                $(body).find("#PSID.selectpicker").append(new Option(obj.PSName, obj.PSID));
+                            });
+                            $(body).find("#PSID.selectpicker").selectpicker('refresh');
+                        });
+                    },
+                    end: function () {
+                        //销毁时刷新
+                        $('#productsTable').bootstrapTable("refresh");
+                    }
+                });
+            });
+            //修改
+            $("#EditProducts").click(function () {
+                var row = $("#productsTable").bootstrapTable("getSelections");
+                if (row.length != 1) {
+                    layer.msg("请选择一条要修改的商品！");
+                    return;
+                }
+                layer.open({
+                    type: 2,
+                    area: ['600px', '600px'],
+                    scrollbar: false,
+                    title: ['修改商品', 'font-weight:700'],
+                    content: ['/Basic/ProductsEdit.html', 'auto'],
+                    success: function (layero, index) {
+                        var body = layer.getChildFrame("body", index);
+                        $.getJSON("http://localhost:43727/api/Products/" + row[0].ProID, function (rs) {
+                            setForm($(body).find("form"), rs);
+                            //查询商品类型
+                            $.getJSON("http://localhost:43727/api/ProductTypes", function (data) {
+                                $.each(data, function (i, obj) {
+                                    $(body).find("#PTID.selectpicker").append(new Option(obj.PTName, obj.PTID));
+                                });
+                                $(body).find("#PTID.selectpicker").selectpicker('refresh');
+                                $(body).find("#PTID.selectpicker").selectpicker("val", rs.PTID);
+                            });
+                            //查询商品颜色
+                            $.getJSON("http://localhost:43727/api/ProductColor", function (data) {
+                                $.each(data, function (i, obj) {
+                                    $(body).find("#PCID.selectpicker").append(new Option(obj.PCName, obj.PCID));
+                                });
+                                $(body).find("#PCID.selectpicker").selectpicker('refresh');
+                                $(body).find("#PCID.selectpicker").selectpicker("val", rs.PCID);
+                            });
+                            //查询商品单位
+                            $.getJSON("http://localhost:43727/api/ProductUnit", function (data) {
+                                $.each(data, function (i, obj) {
+                                    $(body).find("#PUID.selectpicker").append(new Option(obj.PUName, obj.PUID));
+                                });
+                                $(body).find("#PUID.selectpicker").selectpicker('refresh');
+                                $(body).find("#PUID.selectpicker").selectpicker("val", rs.PUID);
+                            });
+                            //查询商品规格
+                            $.getJSON("http://localhost:43727/api/ProductSpec", function (data) {
+                                $.each(data, function (i, obj) {
+                                    $(body).find("#PSID.selectpicker").append(new Option(obj.PSName, obj.PSID));
+                                });
+                                $(body).find("#PSID.selectpicker").selectpicker('refresh');
+                                $(body).find("#PSID.selectpicker").selectpicker("val", rs.PSID);
+                            });
+                            if (rs.ProImg != "" || rs.ProImg != null) {
+                                $(body).find("#demo1").prop("src", "/images/" + rs.ProImg);
+                            }
+                        });
+                    },
+                    end: function () {
+                        //销毁时刷新
+                        $('#productsTable').bootstrapTable("refresh");
+                    }
+                });
+            });
+            //删除
+            $("#DeleteProducts").click(function () {
+                var row = $("#productsTable").bootstrapTable("getSelections");
+                if (row.length != 1) {
+                    layer.msg("请选择一条要删除的商品！");
+                    return;
+                }
+                var bool = true;
+                $.ajax({
+                    url: "http://localhost:43727/api/DepotStock?ProID=" + row[0].ProID,
+                    type: "get",
+                    async: false,
+                    success: function (data) {
+                        if (data) {
+                            layer.msg("此商品还有库存，不能删除！");
+                            bool = false;
+                        }
+                    }
+                });
+                if (!bool) return false;
+                layer.confirm('您确定要删除此商品吗？', {
+                    btn: ['确定', '取消'], //按钮
+                    icon: 2
+                }, function () {
+                    $.ajax({
+                        url: "http://localhost:43727/api/Products/" + row[0].ProID,
+                        type: "delete",
+                        success: function (data) {
+                            if (data) {
+                                layer.msg("删除成功！");
+                                $('#productsTable').bootstrapTable("refresh");
+                            } else {
+                                layer.msg("删除失败！");
+                            }
+                        }
+                    });
+                }, function () {
+
+                });
+            });
+        });
+    </script>
+</body>
+</html>

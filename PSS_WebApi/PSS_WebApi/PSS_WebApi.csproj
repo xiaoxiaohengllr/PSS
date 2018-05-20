@@ -100,11 +100,12 @@
       <DependentUpon>PSS.edmx</DependentUpon>
       <LastGenOutput>PSS.cs</LastGenOutput>
     </Content>
-    <Content Include="Web.config" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\WebApiConfig.cs" />
-    <Compile Include="Controllers\BankController.cs" />
     <Compile Include="Controllers\CustomerLevelController.cs" />
     <Compile Include="Controllers\CustomerOrderController.cs" />
     <Compile Include="Controllers\CustomersController.cs" />

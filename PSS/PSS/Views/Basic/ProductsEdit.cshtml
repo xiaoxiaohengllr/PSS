@@ -1,0 +1,263 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title></title>
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/Content/bootstrap-select.min.css" rel="stylesheet" />
+    <link href="~/Content/bootstrapValidator.min.css" rel="stylesheet" />
+    <link href="~/layui/css/layui.css" rel="stylesheet" />
+</head>
+<body>
+    <div class="container">
+        <form>
+            <div class="form-group">
+                <label for="ProName">
+                    商品名称
+                </label>
+                <input type="text" class="form-control" id="ProName" name="ProName" placeholder="请输入商品名称">
+            </div>
+            <div class="form-group">
+                <label for="ProJP">
+                    拼音简拼
+                </label>
+                <input type="text" class="form-control" id="ProJP" name="ProJP" placeholder="拼音简拼">
+            </div>
+            <div class="form-group">
+                <label for="PTID">
+                    商品类型
+                </label>
+                <select id="PTID" name="PTID" class="selectpicker form-control" data-style="btn-default"></select>
+            </div>
+            <div class="form-group">
+                <label for="PUID">
+                    商品单位
+                </label>
+                <select id="PUID" name="PUID" class="selectpicker form-control" data-style="btn-default"></select>
+            </div>
+            <div class="form-group">
+                <label for="PTID">
+                    商品颜色
+                </label>
+                <select id="PCID" name="PCID" class="selectpicker form-control" data-style="btn-default"></select>
+            </div>
+            <div class="form-group">
+                <label for="PSID">
+                    商品规格
+                </label>
+                <select id="PSID" name="PSID" class="selectpicker form-control" data-style="btn-default"></select>
+            </div>
+            <div class="form-group">
+                <label for="ProTM">
+                    条码
+                </label>
+                <input type="text" class="form-control" id="ProTM" name="ProTM" placeholder="条码">
+            </div>
+            <div class="form-group">
+                <label for="ProWorkShop">
+                    生产厂家
+                </label>
+                <input type="text" class="form-control" id="ProWorkShop" name="ProWorkShop" placeholder="请输入生产厂家">
+            </div>
+            <div class="form-group">
+                <label for="ProMax">
+                    库存上限
+                </label>
+                <input type="text" class="form-control" id="ProMax" name="ProMax" value="0" placeholder="请输入库存上限">
+            </div>
+            <div class="form-group">
+                <label for="ProWorkShop">
+                    库存下限
+                </label>
+                <input type="text" class="form-control" id="ProMin" name="ProMin" value="0" placeholder="请输入库存下限">
+            </div>
+            <div class="form-group">
+                <label for="ProInPrice">
+                    预设进价
+                </label>
+                <input type="text" class="form-control" id="ProInPrice" name="ProInPrice" placeholder="请输入预设进价">
+            </div>
+            <div class="form-group">
+                <label for="ProInPrice">
+                    售价
+                </label>
+                <input type="text" class="form-control" id="ProPrice" name="ProPrice" placeholder="请输入售价">
+            </div>
+            <div class="layui-upload">
+                <label>商品图片</label>
+                <div class="layui-upload-list">
+                    <button type="button" class="layui-btn form-control" id="test1">上传图片</button>
+                    <img class="layui-upload-img" src="" style="width:100%;height:300px" id="demo1">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="ProDesc">
+                    备注
+                </label>
+                <textarea type="text" style="resize: none" class="form-control" id="ProDesc" name="ProDesc" placeholder="请输入备注"></textarea>
+            </div>
+            <div class="form-group container text-center">
+                <input type="submit" class="btn btn-primary" value="提交">
+                <input type="button" class="btn btn-default" onclick="Close()" value="返回">
+            </div>
+            <input type="hidden" id="ProID" name="ProID" value="" />
+        </form>
+    </div>
+    <script src="~/Scripts/jquery-3.2.1.min.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    <script src="~/Scripts/ajaxHelp.js"></script>
+    <script src="~/layui/layui.all.js"></script>
+    <script src="~/Scripts/bootstrapValidator.min.js"></script>
+    <script>
+        //关闭弹出层
+        function Close() {
+            //parent.window.location.reload();
+            var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+            parent.layer.close(index);
+        }
+        var fliename = "";
+        $(function () {
+            //文件上传
+            layui.use('upload', function () {
+                var $ = layui.jquery
+                    , upload = layui.upload;
+
+                //普通图片上传
+                var uploadInst = upload.render({
+                    elem: '#test1'
+                    , url: '/Basic/ProductsImgUpload'
+                    , before: function (obj) {
+                        //预读本地文件示例，不支持ie8
+                        obj.preview(function (index, file, result) {
+                            $('#demo1').attr('src', result); //图片链接（base64）
+                        });
+                    }
+                    , done: function (res) {
+                        fliename = res.file;
+                        //如果上传失败
+                        if (res.file == "") {
+                            return layer.msg('上传失败');
+                        } else {
+                            return layer.msg('上传成功');
+                        }
+                        //上传成功
+                    }, error: function () {
+                        return layer.msg('上传失败');
+                    }
+                });
+            });
+            //验证
+            $("form").bootstrapValidator({
+                message: "必填",//无效
+                feedbackIcons: { //样式设置
+                    valid: 'glyphicon glyphicon-ok',
+                    invalid: 'glyphicon glyphicon-remove',
+                    validating: 'glyphicon glyphicon-refresh'
+                },
+                fields: {
+                    ProName: {
+                        validators: {
+                            notEmpty: {
+                                message: "商品名称不能为空"
+                            },
+                            remote: {
+                                url: "http://localhost:43727/api/Products",
+                                async: false,
+                                data: function (validator) {
+                                    return {
+                                        ProID: document.getElementById("ProID").value
+                                    };
+                                },
+                                message: "商品名称已存在",
+                                delay: 1000
+                            }
+                        }
+                    },
+                    ProJP: {
+                        validators: {
+                            notEmpty: {
+                                message: "商品简拼不能为空"
+                            }
+                        }
+                    },
+                    ProTM: {
+                        validators: {
+                            notEmpty: {
+                                message: "条码不能为空"
+                            }
+                        }
+                    },
+                    ProMin: {
+                        validators: {
+                            notEmpty: {
+                                message: "请输入库存下限"
+                            },
+                            regexp: {
+                                regexp: /^((\d+)|(0+))$/,
+                                message: '库存下限输入有误 '
+                            }
+                        }
+                    },
+                    ProMax: {
+                        validators: {
+                            notEmpty: {
+                                message: "请输入库存上限"
+                            },
+                            regexp: {
+                                regexp: /^((-\d+)|(\d+)|(0+))$/,
+                                message: '库存上限输入有误 '
+                            },
+                            callback: {
+                                message: '库存上限不能小于库存下限',
+                                callback: function (value, validator, $field) {
+                                    return $("#ProMax").val() > $("#ProMin").val();
+                                }
+                            }
+                        }
+                    },
+                    ProInPrice: {
+                        validators: {
+                            regexp: {
+                                regexp: /^(([0-9]+\.[0-9]*[1-9][0-9]*)|([0-9]*[1-9][0-9]*\.[0-9]+)|([0-9]*[1-9][0-9]*))$/,
+                                message: "预设进价输入有误"
+                            }
+                        }
+                    },
+                    ProPrice: {
+                        validators: {
+                            regexp: {
+                                regexp: /^(([0-9]+\.[0-9]*[1-9][0-9]*)|([0-9]*[1-9][0-9]*\.[0-9]+)|([0-9]*[1-9][0-9]*))$/,
+                                message: "售价输入有误"
+                            }
+                        }
+                    }
+                }
+            }).on('success.form.bv', function (e) {
+                e.preventDefault();
+                var Products = serializeJson($("form"));
+                Products.ProDesc = $("[name=ProDesc]").val();
+                Products.ProImg = fliename == "" ? $("#demo1").prop("src").substring($("#demo1").prop("src").lastIndexOf("/") + 1) : fliename;
+                $.ajax({
+                    type: Products.ProID == "" ? "post" : "put",//如果有编号就put提交，没有post就提交
+                    async: false,
+                    url: "http://localhost:43727/api/Products",
+                    data: Products,
+                    success: function (rs) {
+                        if (rs) {
+                            Close();
+                        } else {
+                            layer.msg("操作失败");
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
