@@ -14,6 +14,22 @@ namespace PSS_WebApi.Controllers
     public class DeptController : ApiController
     {
         public void Options() { }
+        //查询所有部门
+        public async Task<IHttpActionResult> Get_Dept_SelectAll_Async()
+        {
+            using (PSSEntities db = new PSSEntities())
+            {
+                return Ok(await db.Dept
+                    .Where(d=>d.DState)
+                    .Select(d => new
+                    {
+                        d.DID,
+                        d.DName,
+                        d.DParentID,
+                        d.DState
+                    }).ToListAsync());
+            }
+        }
         //根据Id查询部门
         public async Task<IHttpActionResult> Get_Dept_SelectById_Async(int id)
         {
@@ -35,7 +51,7 @@ namespace PSS_WebApi.Controllers
             using (PSSEntities db = new PSSEntities())
             {
                 return Ok(await db.Dept
-                    .Where(d=>d.DState)
+                    .Where(d => d.DState)
                     .Where(d => d.DParentID == DParentID)
                     .Select(d => new
                     {
@@ -47,7 +63,7 @@ namespace PSS_WebApi.Controllers
             }
         }
         //判断部门名称是否存在
-        public async Task<IHttpActionResult> Get_Dept_DeptNameIsExist_Async(string DName,string DID)
+        public async Task<IHttpActionResult> Get_Dept_DeptNameIsExist_Async(string DName, string DID)
         {
             using (PSSEntities db = new PSSEntities())
             {
@@ -104,8 +120,8 @@ namespace PSS_WebApi.Controllers
         {
             using (PSSEntities db = new PSSEntities())
             {
-                Dept dept =await db.Dept.FindAsync(id);
-                if (dept==null)
+                Dept dept = await db.Dept.FindAsync(id);
+                if (dept == null)
                 {
                     return Ok(0);
                 }

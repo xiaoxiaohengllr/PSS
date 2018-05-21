@@ -1,0 +1,177 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title></title>
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/bootstrap-table-develop/dist/bootstrap-table.css" rel="stylesheet" />
+    <link href="~/Content/bootstrap-select.min.css" rel="stylesheet" />
+    <link href="~/layui/css/layui.css" rel="stylesheet" />
+</head>
+<body>
+    <div class="panel panel-default">
+        <div class="panel-heading">员工管理</div>
+        <div class="panel-body">
+            <div id="btns" class="btn-group">
+                <button class="btn btn-primary" id="AddEmp"><i class="glyphicon glyphicon-save"></i>新增</button>
+                <button class="btn btn-info" id="EditEmp"><i class="glyphicon glyphicon-edit"></i>修改</button>
+                <form id="formSelectEmp" class="form-inline" style="float:left; margin-left:10px;">
+                    <div class="form-group">
+                        <label for="EmpName">员工名称:</label>
+                        <input type="text" name="EmpName" class="form-control" id="EmpName" placeholder="请输入商品类别名称">
+                    </div>
+                    <div class="form-group">
+                        <label for="DID">部门名称:</label>
+                        <select id="DID" name="DID" class="selectpicker" data-style="btn-default">
+                            <option value="-1">所有部门</option>
+                        </select>
+                    </div>
+                    <button type="button" id="search" class="btn btn-default">查询</button>
+                </form>
+            </div>
+            <table id="empTable" class="table table-bordered table-striped table-hover"></table>
+        </div>
+    </div>
+    <script src="~/Scripts/jquery-3.2.1.min.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    <script src="~/bootstrap-table-develop/dist/bootstrap-table.js"></script>
+    <script src="~/bootstrap-table-develop/dist/locale/bootstrap-table-zh-CN.min.js"></script>
+    <script src="~/bootstrap-table-develop/dist/extensions/export/bootstrap-table-export.min.js"></script>
+    <script src="~/bootstrap-table-develop/dist/extensions/export/tableExport.js"></script>
+    <script src="~/Scripts/bootstrap-select.min.js"></script>
+    <script src="~/iCheck/jquery.icheck.min.js"></script>
+    <script src="~/layui/layui.all.js"></script>
+    <script src="~/Scripts/ajaxHelp.js"></script>
+    <script>
+        $(function () {
+            //绑定下拉框
+            $.getJSON("http://localhost:43727/api/Dept", function (data) {
+                $.each(data, function (i, obj) {
+                    $("#DID").append(new Option(obj.DName, obj.DID));
+                });
+                $("#DID").selectpicker('refresh');
+            });
+            //绑定表格数据
+            $("#empTable").bootstrapTable({
+                method: "get",
+                url: "http://localhost:43727/api/Emp",
+                undefinedText: "",//当数据为 undefined 时显示的空字符
+                pagination: true, //表格底部显示分页条
+                paginationLoop: false,//禁用分页条无限循环的功能
+                toolbar: "#btns",
+                sidePagination: "server",
+                showExport: true,
+                pageNumber: 1,
+                pageSize: 10,
+                pageList: [5, 10, 20, "All"],
+                paginationPreText: "上一页",
+                paginationNextText: "下一页",
+                showColumns: true,
+                showRefresh: true,
+                clickToSelect: true,
+                queryParams: function (params) {
+                    params.EmpName = "";
+                    params.DID = -1;
+                    return params;
+                },
+                columns: [
+                    { checkbox: true },
+                    { field: "EmpID", title: "员工编号" },
+                    { field: "EmpName", title: "员工姓名" },
+                    { field: "EmpJob", title: "职位" },
+                    { field: "EmpSex", title: "性别" },
+                    { field: "EmpBday", title: "生日" },
+                    { field: "EmpTCType", title: "提成方式" },
+                    { field: "EmpTcRate", title: "提成比率" },
+                    { field: "EmpMail", title: "联系电话" },
+                    { field: "EmpQQ", title: "QQ" },
+                    { field: "EmpAddr", title: "地址" },
+                    { field: "DName", title: "所属部门" }
+                ]
+            });
+            //条件查询
+            $("#search").click(function () {
+                var EmpName = $("#EmpName").val();
+                var DID = $("#DID").val();
+                $.getJSON("http://localhost:43727/api/Emp?order=asc&offset=0&limit=10&EmpName=" + EmpName + "&DID=" + DID, function (data) {
+                    $("#empTable").bootstrapTable("load", data);
+                });
+            });
+            //添加
+            $("#AddEmp").click(function () {
+                layer.open({
+                    type: 2,
+                    area: ['600px', '600px'],
+                    scrollbar: false,
+                    title: ['新增员工', 'font-weight:700'],
+                    content: ['/Basic/EmpEdit.html', 'auto'],
+                    success: function (layero, index) {
+                        var body = layer.getChildFrame("body", index);
+                        $(body).find(":checkbox").iCheck({
+                            checkboxClass: "icheckbox_square-red"
+                        });
+                        $.getJSON("http://localhost:43727/api/Dept", function (data) {
+                            $.each(data, function (i, obj) {
+                                $(body).find("#Did").append(new Option(obj.DName, obj.DID));
+                            });
+                            $(body).find("#Did").selectpicker('refresh');
+                        });
+                        $(body).find("#EmpSex").selectpicker('refresh');
+                        $(body).find("#EmpTCType").selectpicker('refresh');
+                    },
+                    end: function () {
+                        //销毁时刷新
+                        $('#empTable').bootstrapTable("refresh");
+                    }
+                });
+            });
+            //修改
+            $("#EditEmp").click(function () {
+                var row = $("#empTable").bootstrapTable("getSelections");
+                if (row.length != 1) {
+                    layer.msg("请选择一条要修改的员工！");
+                    return;
+                }
+                layer.open({
+                    type: 2,
+                    area: ['600px', '600px'],
+                    scrollbar: false,
+                    title: ['修改员工', 'font-weight:700'],
+                    content: ['/Basic/EmpEdit.html', 'auto'],
+                    success: function (layero, index) {
+                        var body = layer.getChildFrame("body", index);
+                        $.getJSON("http://localhost:43727/api/Emp/" + row[0].EmpID, function (data) {
+                            setForm($(body).find("form"), data);
+                            $(body).find(":checkbox").iCheck({
+                                checkboxClass: "icheckbox_square-red"
+                            });
+                            if (data.IsSelect) {
+                                $(body).find(":checkbox").iCheck("check");
+                            }
+                            $.getJSON("http://localhost:43727/api/Dept", function (data) {
+                                $.each(data, function (i, obj) {
+                                    $(body).find("#Did").append(new Option(obj.DName, obj.DID));
+                                });
+                                $(body).find("#Did").selectpicker('refresh');
+                                $(body).find("#Did").selectpicker("val", data.Did);
+                            });
+                            $(body).find("#EmpSex").selectpicker('refresh');
+                            $(body).find("#EmpTCType").selectpicker('refresh');
+                        });
+                    },
+                    end: function () {
+                        //销毁时刷新
+                        $('#empTable').bootstrapTable("refresh");
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

@@ -68,6 +68,16 @@ namespace PSS.Controllers
         {
             return View();
         }
+        //员工设置页面
+        public ActionResult Emp()
+        {
+            return View();
+        }
+        //添加和修改员工页面
+        public ActionResult EmpEdit()
+        {
+            return View();
+        }
         //商品图片上传
         public ActionResult ProductsImgUpload()
         {

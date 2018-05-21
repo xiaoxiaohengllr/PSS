@@ -607,6 +607,8 @@
     <Content Include="Views\Basic\Products.cshtml" />
     <Content Include="Views\Basic\ProductsEdit.cshtml" />
     <Content Include="Views\Basic\Dept.cshtml" />
+    <Content Include="Views\Basic\Emp.cshtml" />
+    <Content Include="Views\Basic\EmpEdit.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
