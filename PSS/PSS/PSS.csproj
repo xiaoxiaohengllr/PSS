@@ -387,6 +387,10 @@
     <Content Include="iCheck\square\yellow.css" />
     <Content Include="iCheck\square\yellow.png" />
     <Content Include="iCheck\square\_all.css" />
+    <Content Include="iconfont\fonts\icomoon.svg" />
+    <Content Include="iconfont\style.css" />
+    <Content Include="images\bg.jpg" />
+    <Content Include="images\main_bg.png" />
     <Content Include="layui\font\iconfont.eot" />
     <Content Include="layui\font\iconfont.ttf" />
     <Content Include="layui\font\iconfont.woff" />
@@ -394,6 +398,9 @@
     <Content Include="Scripts\bootstrap-select.js" />
     <Content Include="Scripts\bootstrap-select.js.map" />
     <Content Include="Content\bootstrap-select.css.map" />
+    <Content Include="iconfont\fonts\icomoon.eot" />
+    <Content Include="iconfont\fonts\icomoon.ttf" />
+    <Content Include="iconfont\fonts\icomoon.woff" />
     <None Include="Scripts\jquery-3.2.1.intellisense.js" />
     <Content Include="layui\css\layui.css" />
     <Content Include="layui\css\layui.mobile.css" />
@@ -584,11 +591,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Attribute\UsersFilterAttribute.cs" />
     <Compile Include="Controllers\BasicController.cs" />
     <Compile Include="Controllers\MainController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\Users.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -609,6 +618,7 @@
     <Content Include="Views\Basic\Dept.cshtml" />
     <Content Include="Views\Basic\Emp.cshtml" />
     <Content Include="Views\Basic\EmpEdit.cshtml" />
+    <Content Include="Views\Main\Login.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -618,8 +628,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="images\" />
-    <Folder Include="Models\" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />

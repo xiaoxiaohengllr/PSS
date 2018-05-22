@@ -122,6 +122,8 @@
     <Compile Include="Controllers\ProductUnitController.cs" />
     <Compile Include="Controllers\QuotePriceController.cs" />
     <Compile Include="Controllers\StocksController.cs" />
+    <Compile Include="Controllers\UsersController.cs" />
+    <Compile Include="Controllers\UsersLoginController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>

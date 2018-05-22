@@ -47,6 +47,16 @@ namespace PSS_WebApi.Controllers
                 return Ok(await db.Emp.Where(e => e.Did == DID).CountAsync() > 0);
             }
         }
+        //修改员工状态
+        public async Task<IHttpActionResult> Get_Emp_DeptUpdateState(int EmpID, int EmpState)
+        {
+            using (PSSEntities db=new PSSEntities())
+            {
+                var Emp = db.Emp.Find(EmpID);
+                Emp.EmpState = EmpState;
+                return Ok(await db.SaveChangesAsync() > 0);
+            }
+        }
         //员工分页查询
         public async Task<IHttpActionResult> Get_Emp_SelectDeptPage_Async(int limit, int offset, string order, int DID, string EmpName)
         {
@@ -55,12 +65,12 @@ namespace PSS_WebApi.Controllers
                 return Ok(new
                 {
                     total = await db.Emp
-                        .Where(e => e.EmpState == 1)
+                        .Where(e => e.EmpState != 0)
                         .Where(e => string.IsNullOrEmpty(EmpName) || e.EmpName.Contains(EmpName))
                         .Where(e => DID == -1 || e.Did == DID || e.Dept.DParentID == DID)
                         .CountAsync(),
                     rows = await db.Emp
-                        .Where(e => e.EmpState == 1)
+                        .Where(e => e.EmpState != 0)
                         .Where(e => string.IsNullOrEmpty(EmpName) || e.EmpName.Contains(EmpName))
                         .Where(e => DID == -1 || e.Did == DID || e.Dept.DParentID == DID)
                         .Select(e => new

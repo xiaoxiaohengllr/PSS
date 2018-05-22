@@ -30,14 +30,15 @@
             <!-- 头部区域（可配合layui已有的水平导航） -->
             <ul class="layui-nav layui-layout-right">
                 <li class="layui-nav-item">
-                    <a href="javascript:;">Admin
+                    <a href="javascript:;">
+                        @((Session["user"] as PSS.Models.Users).UsersName)
                     </a>
                     <dl class="layui-nav-child">
                         <dd><a href="">基本资料</a></dd>
                         <dd><a href="">安全设置</a></dd>
                     </dl>
                 </li>
-                <li class="layui-nav-item"><a href="">安全退出</a></li>
+                <li class="layui-nav-item"><a href="/Main/RemoveSession" >安全退出</a></li>
             </ul>
         </div>
 
@@ -75,6 +76,7 @@
             © 易特进销存
         </div>
     </div>
+    <script src="~/Scripts/jquery-3.2.1.min.js"></script>
     <script src="~/layui/layui.js"></script>
     <script>
         //JavaScript代码区域

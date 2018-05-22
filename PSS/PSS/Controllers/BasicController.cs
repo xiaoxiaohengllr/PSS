@@ -1,3 +1,5 @@
+
+using PSS.Attribute;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,6 +8,7 @@ using System.Web.Mvc;
 
 namespace PSS.Controllers
 {
+    [UsersFilter]
     public class BasicController : Controller
     {
         //商品分类页面
