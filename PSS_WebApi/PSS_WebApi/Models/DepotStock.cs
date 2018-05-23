@@ -19,5 +19,8 @@ namespace PSS_WebApi.Models
         public Nullable<int> ProID { get; set; }
         public Nullable<int> DSAmount { get; set; }
         public Nullable<decimal> DSPrice { get; set; }
+    
+        public virtual Depots Depots { get; set; }
+        public virtual Products Products { get; set; }
     }
 }

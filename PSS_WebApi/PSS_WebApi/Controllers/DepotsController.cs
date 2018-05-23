@@ -20,7 +20,7 @@ namespace PSS_WebApi.Controllers
         {
             using (PSSEntities db = new PSSEntities())
             {
-                return Ok(await db.Depots.Select(d => new
+                return Ok(await db.Depots.Where(d=>d.DepotState==1).Select(d => new
                 {
                     d.DepotAddress,
                     d.DepotDesc,

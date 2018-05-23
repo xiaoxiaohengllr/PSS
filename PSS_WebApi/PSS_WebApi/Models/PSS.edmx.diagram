@@ -69,6 +69,8 @@
         <AssociationConnector Association="PSSModel.FK_Products_ProductTypes" ManuallyRouted="false" />
         <AssociationConnector Association="PSSModel.FK_Products_ProductUnit" ManuallyRouted="false" />
         <AssociationConnector Association="PSSModel.FK_QuotePrice_Users" ManuallyRouted="false" />
+        <AssociationConnector Association="PSSModel.FK_DepotStock_Depots" />
+        <AssociationConnector Association="PSSModel.FK_DepotStock_Products" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

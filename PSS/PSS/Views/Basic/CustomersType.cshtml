@@ -1,0 +1,457 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title></title>
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/bootstrap-table-develop/dist/bootstrap-table.css" rel="stylesheet" />
+    <link href="~/Content/bootstrap-select.min.css" rel="stylesheet" />
+    <link href="~/Content/bootstrapValidator.css" rel="stylesheet" />
+    <link href="~/layui/css/layui.css" rel="stylesheet" />
+    <link href="~/iCheck/all.css" rel="stylesheet" />
+</head>
+<body>
+    <div class="panel panel-default">
+        <div class="panel-heading">商品资料</div>
+        <div class="panel-body">
+            <div id="CustomerLevelBtns" class="btn-group">
+                <button class="btn btn-primary" id="addCustomerLevel"><i class="glyphicon glyphicon-save"></i>新增</button>
+                <button class="btn btn-info" id="EditCustomerLevel"><i class="glyphicon glyphicon-edit"></i>修改</button>
+                <button class="btn btn-danger" id="DeleteCustomerLevel"><i class="glyphicon glyphicon-remove"></i>删除</button>
+            </div>
+            <table id="CustomerLevelTable" class="table table-bordered table-striped table-hover"></table>
+
+            <div id="CustomerTypesBtns" class="btn-group">
+                <button class="btn btn-primary" id="addCustomerTypes"><i class="glyphicon glyphicon-save"></i>新增</button>
+                <button class="btn btn-info" id="EditCustomerTypes"><i class="glyphicon glyphicon-edit"></i>修改</button>
+                <button class="btn btn-danger" id="DeleteCustomerTypes"><i class="glyphicon glyphicon-remove"></i>删除</button>
+            </div>
+            <table id="CustomerTypesTable" class="table table-bordered table-striped table-hover"></table>
+        </div>
+    </div>
+    <script src="~/Scripts/jquery-3.2.1.min.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    <script src="~/bootstrap-table-develop/dist/bootstrap-table.js"></script>
+    <script src="~/bootstrap-table-develop/dist/locale/bootstrap-table-zh-CN.min.js"></script>
+    <script src="~/bootstrap-table-develop/dist/extensions/export/bootstrap-table-export.min.js"></script>
+    <script src="~/bootstrap-table-develop/dist/extensions/export/tableExport.js"></script>
+    <script src="~/Scripts/bootstrap-select.min.js"></script>
+    <script src="~/layui/layui.all.js"></script>
+    <script src="~/Scripts/ajaxHelp.js"></script>
+    <script src="~/Scripts/bootstrapValidator.min.js"></script>
+    <script src="~/iCheck/jquery.icheck.min.js"></script>
+    <script>
+
+        //关闭弹出层
+        function Close() {
+            layer.closeAll();
+        }
+        //加载客户等级
+        $(function () {
+            //绑定等级
+            $("#CustomerLevelTable").bootstrapTable({
+                method: "get",
+                url: "http://localhost:43727/api/CustomerLevel",
+                undefinedText: "",//当数据为 undefined 时显示的空字符
+                pagination: true, //表格底部显示分页条
+                paginationLoop: false,//禁用分页条无限循环的功能
+                toolbar: "#CustomerLevelBtns",
+                sidePagination: "server",
+                showExport: true,
+                pageNumber: 1,
+                pageSize: 5,
+                pageList: [5, 10, "All"],
+                paginationPreText: "上一页",
+                paginationNextText: "下一页",
+                showColumns: true,
+                showRefresh: true,
+                clickToSelect: true,
+                columns: [
+                    { checkbox: true },
+                    { field: "CLID", title: "等级编号" },
+                    { field: "CLName", title: "等级名称" },
+
+                ]
+            });
+
+            $("#addCustomerLevel").click(function () {
+                layer.open({
+                    type: 1,
+                    area: ['400px', '200px'],
+                    scrollbar: false,
+                    cache: false,
+                    title: ['新增客户等级', 'font-weight:700'],
+                    content: '<div style="margin-left:12px;margin-right:12px"><form id="CustomerLevelFrom"><div class="form-group"><label for="CLName">客户名称</label><input type="text" class="form-control" id="CLName" name="CLName" placeholder="请输入客户名称"></div><div class="form-group text-center"><input type="submit" class="btn btn-primary" value="提交">&nbsp;&nbsp;<input type="button" class="btn btn-default" onclick="Close()" value="返回"></div><input type="hidden" id="CLID" name="CLID" value=""/></form></div>',
+                    success: function (layero, index) {
+                        $("#CustomerLevelFrom").bootstrapValidator({
+                            message: "必填",//无效
+                            feedbackIcons: { //样式设置
+                                valid: 'glyphicon glyphicon-ok',
+                                invalid: 'glyphicon glyphicon-remove',
+                                validating: 'glyphicon glyphicon-refresh'
+
+                            },
+                            fields: {
+                                CLName: {
+                                    validators: {
+                                        notEmpty: {
+                                            message: "客户等级名称不能为空"
+                                        },
+                                        remote: {
+                                            url: "http://localhost:43727/api/CustomerLevel",
+                                            async: false,
+                                            data: function (validator) {
+                                                return {
+                                                    cLID: document.getElementById("CLID").value
+                                                };
+                                            },
+                                            message: "客户等级名称已存在",
+                                            delay: 1000
+                                        }
+                                    }
+                                }
+                            }
+                        }).on('success.form.bv', function (e) {
+                            e.preventDefault();
+                            var customerLevel = serializeJson($("#CustomerLevelFrom"));
+                            $.ajax({
+                                type: "post",
+                                async: false,
+                                url: "http://localhost:43727/api/CustomerLevel",
+                                data: customerLevel,
+                                success: function (rs) {
+                                    if (rs) {
+                                        Close();
+                                    } else {
+                                        layer.msg("操作失败");
+                                    }
+                                }
+                            });
+                        });
+                    },
+                    end: function () {
+                        //销毁时刷新
+                        $('#CustomerLevelTable').bootstrapTable("refresh");
+                    }
+                });
+
+            });
+            //修改客户等级
+            $("#EditCustomerLevel").click(function () {
+                var row = $("#CustomerLevelTable").bootstrapTable("getSelections");
+                if (row.length != 1) {
+                    layer.msg("请选择一条要修改的客户等级！");
+                    return;
+                }
+                layer.open({
+                    type: 1,
+                    area: ['400px', '200px'],
+                    scrollbar: false,
+                    cache: false,
+                    title: ['修改客户等级', 'font-weight:700'],
+                    content: '<div style="margin-left:12px;margin-right:12px"><form id="CustomerLevelFrom"><div class="form-group"><label for="CLName">商品客户名称</label><input type="text" class="form-control" id="CLName" name="CLName" placeholder="请输入客户等级名称"></div><div class="form-group text-center"><input type="submit" class="btn btn-primary" value="提交">&nbsp;&nbsp;<input type="button" class="btn btn-default" onclick="Close()" value="返回"></div><input type="hidden" id="CLID" name="CLID" value=""/></form></div>',
+                    success: function (layero, index) {
+                        $.getJSON("http://localhost:43727/api/CustomerLevel?CLID=" + row[0].CLID, function (data) {
+                            $("#CustomerLevelFrom").find("[name=CLName]").val(data.CLName);
+                            $("#CustomerLevelFrom").find("[name=CLID]").val(data.CLID);
+                        });
+                        $("#CustomerLevelFrom").bootstrapValidator({
+                            message: "必填",//无效
+                            feedbackIcons: { //样式设置
+                                valid: 'glyphicon glyphicon-ok',
+                                invalid: 'glyphicon glyphicon-remove',
+                                validating: 'glyphicon glyphicon-refresh'
+                            },
+                            fields: {
+                                CLName: {
+                                    validators: {
+                                        notEmpty: {
+                                            message: "客户等级名称不能为空"
+                                        },
+                                        remote: {
+                                            url: "http://localhost:43727/api/CustomerLevel",
+                                            async: false,
+                                            data: function (validator) {
+                                                return {
+                                                    CLID: document.getElementById("CLID").value
+                                                };
+                                            },
+                                            message: "商品单位名称已存在",
+                                            delay: 1000
+                                        }
+                                    }
+                                }
+                            }
+                        }).on('success.form.bv', function (e) {
+                            e.preventDefault();
+                            var customerLevel = serializeJson($("#CustomerLevelFrom"));
+                            $.ajax({
+                                type: "put",
+                                async: false,
+                                url: "http://localhost:43727/api/CustomerLevel",
+                                data: customerLevel,
+                                success: function (rs) {
+                                    if (rs) {
+                                        Close();
+                                    } else {
+                                        layer.msg("操作失败");
+                                    }
+                                }
+                            });
+                        });
+                    },
+                    end: function () {
+                        //销毁时刷新
+                        $('#CustomerLevelTable').bootstrapTable("refresh");
+                    }
+                });
+            });
+            //删除客户等级
+            $("#DeleteCustomerLevel").click(function () {
+                var row = $("#CustomerLevelTable").bootstrapTable("getSelections");
+                if (row.length != 1) {
+                    layer.msg("请选择一条要删除的客户等级！");
+                    return;
+                }
+                var bool = true;
+                $.ajax({
+                    url: "http://localhost:43727/api/Customers?CLID=" + row[0].CLID,
+                    type: "get",
+                    async: false,
+                    success: function (data) {
+                        //如果是true就说明有子类不能删除
+                        if (data) {
+                            layer.msg("客户等级存在客户，不能删除！");
+                            bool = false;
+                        }
+                    }
+                });
+                if (!bool) return false;
+                layer.confirm('您确定要删除此客户等级吗？', {
+                    btn: ['确定', '取消'], //按钮
+                    icon: 2
+                }, function () {
+                    $.ajax({
+                        url: "http://localhost:43727/api/CustomerLevel/" + row[0].CLID,
+                        type: "delete",
+                        success: function (data) {
+                            if (data) {
+                                layer.msg("删除成功！");
+                                $('#CustomerLevelTable').bootstrapTable("refresh");
+                            } else {
+                                layer.msg("删除失败！");
+                            }
+                        }
+                    });
+                }, function () {
+
+                });
+            });
+
+            //绑定客户类别
+            $("#CustomerTypesTable").bootstrapTable({
+                method: "get",
+                url: "http://localhost:43727/api/CustomerTypes",
+                undefinedText: "",//当数据为 undefined 时显示的空字符
+                pagination: true, //表格底部显示分页条
+                paginationLoop: false,//禁用分页条无限循环的功能
+                toolbar: "#CustomerTypesBtns",
+                sidePagination: "server",
+                showExport: true,
+                pageNumber: 1,
+                pageSize: 5,
+                pageList: [5, 10, "All"],
+                paginationPreText: "上一页",
+                paginationNextText: "下一页",
+                showColumns: true,
+                showRefresh: true,
+                clickToSelect: true,
+                columns: [
+                    { checkbox: true },
+                    { field: "CTID", title: "类别" },
+                    { field: "CTName", title: "名称" }
+                ]
+            });
+            //添加客户类别
+
+            $("#addCustomerTypes").click(function () {
+                layer.open({
+                    type: 1,
+                    area: ['400px', '200px'],
+                    scrollbar: false,
+                    cache: false,
+                    title: ['新增客户类别', 'font-weight:700'],
+                    content: '<div style="margin-left:12px;margin-right:12px"><form id="CustomerTypesFrom"><div class="form-group"><label for="CTName">类别名称</label><input type="text" class="form-control" id="CTName" name="CTName" placeholder="请输入类别名称"></div><div class="form-group text-center"><input type="submit" class="btn btn-primary" value="提交">&nbsp;&nbsp;<input type="button" class="btn btn-default" onclick="Close()" value="返回"></div><input type="hidden" id="CTID" name="CTID" value=""/></form></div>',
+                    success: function (layero, index) {
+                        $("#CustomerTypesFrom").bootstrapValidator({
+                            message: "必填",//无效
+                            feedbackIcons: { //样式设置
+                                valid: 'glyphicon glyphicon-ok',
+                                invalid: 'glyphicon glyphicon-remove',
+                                validating: 'glyphicon glyphicon-refresh'
+                            },
+                            fields: {
+                                CTName: {
+                                    validators: {
+                                        notEmpty: {
+                                            message: "客户类别名称不能为空"
+                                        },
+                                        remote: {
+                                            url: "http://localhost:43727/api/CustomerTypes",
+                                            async: false,
+                                            data: function (validator) {
+                                                return {
+                                                    CTID: document.getElementById("CTID").value
+                                                };
+                                            },
+                                            message: ";客户类别名称已存在",
+                                            delay: 1000
+                                        }
+                                    }
+                                }
+                            }
+                        }).on('success.form.bv', function (e) {
+                            e.preventDefault();
+                            var customerTypesFrom = serializeJson($("#CustomerTypesFrom"));
+                            $.ajax({
+                                type: "post",
+                                async: false,
+                                url: "http://localhost:43727/api/CustomerTypes",
+                                data: customerTypesFrom,
+                                success: function (rs) {
+                                    if (rs) {
+                                        Close();
+                                    } else {
+                                        layer.msg("操作失败");
+                                    }
+                                }
+                            });
+                        });
+                    },
+                    end: function () {
+                        //销毁时刷新
+                        $('#CustomerTypesTable').bootstrapTable("refresh");
+                    }
+                });
+            });
+            //修改客户类别
+            $("#EditCustomerTypes").click(function () {
+                var row = $("#CustomerTypesTable").bootstrapTable("getSelections");
+                if (row.length != 1) {
+                    layer.msg("请选择一条要修改的客户类别！");
+                    return;
+                }
+                layer.open({
+                    type: 1,
+                    area: ['400px', '200px'],
+                    scrollbar: false,
+                    cache: false,
+                    title: ['修改客户类别', 'font-weight:700'],
+                    content: '<div style="margin-left:12px;margin-right:12px"><form id="CustomerTypesFrom"><div class="form-group"><label for="CTID">商品类别名称</label><input type="text" class="form-control" id="CTName" name="CTName" placeholder="请输入客户名称"></div><div class="form-group text-center"><input type="submit" class="btn btn-primary" value="提交">&nbsp;&nbsp;<input type="button" class="btn btn-default" onclick="Close()" value="返回"></div><input type="hidden" id="CTID" name="CTID" value=""/></form></div>',
+                    success: function (layero, index) {
+                        $.getJSON("http://localhost:43727/api/CustomerTypes/" + row[0].CTID, function (data) {
+                            $("#CustomerTypesFrom").find("[name=CTName]").val(data.CTName);
+                            $("#CustomerTypesFrom").find("[name=CTID]").val(data.CTID);
+                        });
+                        $("#CustomerTypesFrom").bootstrapValidator({
+                            message: "必填",//无效
+                            feedbackIcons: { //样式设置
+                                valid: 'glyphicon glyphicon-ok',
+                                invalid: 'glyphicon glyphicon-remove',
+                                validating: 'glyphicon glyphicon-refresh'
+                            },
+                            fields: {
+                                CTName: {
+                                    validators: {
+                                        notEmpty: {
+                                            message: "客户类别名称不能为空"
+                                        },
+                                        remote: {
+                                            url: "http://localhost:43727/api/CustomerTypes",
+                                            async: false,
+                                            data: function (validator) {
+                                                return {
+                                                    CTID: document.getElementById("CTID").value
+                                                };
+                                            },
+                                            message: "客户类别名称已存在",
+                                            delay: 1000
+                                        }
+                                    }
+                                }
+                            }
+                        }).on('success.form.bv', function (e) {
+                            e.preventDefault();
+                            var customerTypes = serializeJson($("#CustomerTypesFrom"));
+                            $.ajax({
+                                type: "put",
+                                async: false,
+                                url: "http://localhost:43727/api/CustomerTypes",
+                                data: customerTypes,
+                                success: function (rs) {
+                                    if (rs) {
+                                        Close();
+                                    } else {
+                                        layer.msg("操作失败");
+                                    }
+                                }
+                            });
+                        });
+                    },
+                    end: function () {
+                        //销毁时刷新
+                        $('#CustomerTypesTable').bootstrapTable("refresh");
+                    }
+                });
+            });
+            //删除客户类别
+            $("#DeleteCustomerTypes").click(function () {
+                var row = $("#CustomerTypesTable").bootstrapTable("getSelections");
+                if (row.length != 1) {
+                    layer.msg("请选择一条要删除的客户类别！");
+                    return;
+                }
+                var bool = true;
+                $.ajax({
+                    url: "http://localhost:43727/api/Customers?CTID=" + row[0].CTID,
+                    type: "get",
+                    async: false,
+                    success: function (data) {
+                        if (data) {
+                            layer.msg("客户类别存在客户，不能删除！");
+                            bool = false;
+                        }
+                    }
+                });
+                if (!bool) return false;
+                layer.confirm('您确定要删除此客户类别吗？', {
+                    btn: ['确定', '取消'], //按钮
+                    icon: 2
+                }, function () {
+                    $.ajax({
+                        url: "http://localhost:43727/api/CustomerTypes/" + row[0].CTID,
+                        type: "delete",
+                        success: function (data) {
+                            if (data) {
+                                layer.msg("删除成功！");
+                                $('#CustomerTypesTable').bootstrapTable("refresh");
+                            } else {
+                                layer.msg("删除失败！");
+                            }
+                        }
+                    });
+                }, function () {
+
+                });
+            });
+        });
+
+    </script>
+</body>
+</html>

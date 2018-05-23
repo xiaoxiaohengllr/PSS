@@ -14,6 +14,12 @@ namespace PSS_WebApi.Models
     
     public partial class Depots
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public Depots()
+        {
+            this.DepotStock = new HashSet<DepotStock>();
+        }
+    
         public string DepotID { get; set; }
         public string DepotName { get; set; }
         public string DepotMan { get; set; }
@@ -22,5 +28,8 @@ namespace PSS_WebApi.Models
         public string DepotDesc { get; set; }
         public Nullable<bool> IsDefault { get; set; }
         public Nullable<int> DepotState { get; set; }
+    
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<DepotStock> DepotStock { get; set; }
     }
 }

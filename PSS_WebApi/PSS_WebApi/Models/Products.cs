@@ -14,6 +14,12 @@ namespace PSS_WebApi.Models
     
     public partial class Products
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public Products()
+        {
+            this.DepotStock = new HashSet<DepotStock>();
+        }
+    
         public int ProID { get; set; }
         public Nullable<int> PTID { get; set; }
         public Nullable<int> PUID { get; set; }
@@ -35,5 +41,7 @@ namespace PSS_WebApi.Models
         public virtual ProductSpec ProductSpec { get; set; }
         public virtual ProductTypes ProductTypes { get; set; }
         public virtual ProductUnit ProductUnit { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<DepotStock> DepotStock { get; set; }
     }
 }

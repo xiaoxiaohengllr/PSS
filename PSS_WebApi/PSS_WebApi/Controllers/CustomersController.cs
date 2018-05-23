@@ -85,6 +85,22 @@ namespace PSS_WebApi.Controllers
                     }).FirstOrDefaultAsync());
             }
         }
+        //判断客户等级是否存在
+        public async Task<IHttpActionResult> Get_Customers_IsExistCustomerLevel_Async(int CLID)
+        {
+            using (PSSEntities db = new PSSEntities())
+            {
+                return Ok(await db.Customers.Where(c => c.CLID == CLID).CountAsync() > 0);
+            }
+        }
+        //判断客户类型是否存在
+        public async Task<IHttpActionResult> Get_Customers_IsExistCustomerTypes_Async(int CTID)
+        {
+            using (PSSEntities db = new PSSEntities())
+            {
+                return Ok(await db.Customers.Where(c => c.CTID == CTID).CountAsync() > 0);
+            }
+        }
         //查询公司名称是否存在
         public async Task<IHttpActionResult> Get_Customers_SelectIsExistCusName_Async(string CusCompany, string CusID)
         {

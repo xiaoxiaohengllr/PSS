@@ -593,6 +593,7 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Attribute\UsersFilterAttribute.cs" />
     <Compile Include="Controllers\BasicController.cs" />
+    <Compile Include="Controllers\BuyController.cs" />
     <Compile Include="Controllers\MainController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -619,6 +620,8 @@
     <Content Include="Views\Basic\Emp.cshtml" />
     <Content Include="Views\Basic\EmpEdit.cshtml" />
     <Content Include="Views\Main\Login.cshtml" />
+    <Content Include="Views\Buy\DepotStock.cshtml" />
+    <Content Include="Views\Basic\CustomersType.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

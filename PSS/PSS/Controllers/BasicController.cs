@@ -81,6 +81,11 @@ namespace PSS.Controllers
         {
             return View();
         }
+        //客户详细资料页面
+        public ActionResult CustomersType()
+        {
+            return View();
+        }
         //商品图片上传
         public ActionResult ProductsImgUpload()
         {
