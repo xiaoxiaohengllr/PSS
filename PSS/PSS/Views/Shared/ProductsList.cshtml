@@ -1,0 +1,56 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/bootstrap-table-develop/dist/bootstrap-table.css" rel="stylesheet" />
+    <link href="~/Content/bootstrap-select.min.css" rel="stylesheet" />
+    <link href="~/layui/css/layui.css" rel="stylesheet" />
+    <link href="~/iCheck/all.css" rel="stylesheet" />
+</head>
+<body>
+    <table id="productsTable" class="table table-bordered table-striped table-hover"></table>
+    <script src="~/Scripts/jquery-3.2.1.min.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    <script src="~/bootstrap-table-develop/dist/bootstrap-table.js"></script>
+    <script src="~/bootstrap-table-develop/dist/locale/bootstrap-table-zh-CN.min.js"></script>
+    <script>
+        $(function () {
+            $("#productsTable").bootstrapTable({
+                method: "get",
+                url: "http://localhost:43727/api/Products",
+                undefinedText: "",//当数据为 undefined 时显示的空字符
+                pagination: true, //表格底部显示分页条
+                paginationLoop: false,//禁用分页条无限循环的功能
+                toolbar: "#btns",
+                sidePagination: "server",
+                pageNumber: 1,
+                pageSize: 10,
+                pageList: [5, 10, 20, "All"],
+                paginationPreText: "上一页",
+                paginationNextText: "下一页",
+                queryParams: function (params) {
+                    params.name = "";
+                    params.PTID = -1;
+                    return params;
+                },
+                columns: [
+                    { field: "ProID", title: "商品编号" },
+                    { field: "ProName", title: "商品名称" },
+                    { field: "ProJP", title: "拼音简拼" },
+                    { field: "PTName", title: "商品类别" },
+                    { field: "ProInPrice", title: "预设进价" },
+                    { field: "ProPrice", title: "售价" },
+                    { field: "ProWorkShop", title: "生产厂家" }
+                ]
+            });
+        })
+    </script>
+</body>
+</html>

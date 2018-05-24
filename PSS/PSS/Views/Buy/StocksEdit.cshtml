@@ -1,0 +1,228 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title></title>
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/bootstrap-table-develop/dist/bootstrap-table.css" rel="stylesheet" />
+    <link href="~/Content/bootstrap-select.min.css" rel="stylesheet" />
+    <link href="~/layui/css/layui.css" rel="stylesheet" />
+</head>
+<body>
+    <div class="panel panel-default">
+        <div class="panel panel-heading">
+            <form class="form-inline" id="StockForm">
+                <div class="form-group">
+                    <label for="PPID">供货商</label>
+                    <input type="text" class="form-control" id="PPID" name="PPID" readonly placeholder="双击选择供货商">
+                </div>
+                <div class="form-group">
+                    <label for="StockDate">下单日期</label>
+                    <input type="text" class="form-control" id="StockDate" name="StockDate" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="StockInDate">交货日期</label>
+                    <input type="text" class="form-control" id="StockInDate" name="StockInDate" readonly placeholder="请选择下单日期">
+                </div>
+                <input type="hidden" name="StockID" />
+                <input type="hidden" name="StockUser" value="@((Session["user"] as PSS.Models.Users).UsersID)" />
+            </form>
+        </div>
+        <div class="panel-body">
+            <table id="stockInDepotDetailTable" class="table table-bordered table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>商品编号</th>
+                        <th>商品名称</th>
+                        <th>商品类别</th>
+                        <th>商品单位</th>
+                        <th>商品规格</th>
+                        <th>商品颜色</th>
+                        <th>商品单价</th>
+                        <th>商品数量</th>
+                        <th style="width:40px;"><button class="btn btn-primary" id="AddRow"><i class="glyphicon glyphicon-plus"></i></button></th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+            <div class="container">
+                <button class="btn btn-primary" id="save" style="float:right"><i class="glyphicon glyphicon-save"></i>保存</button>
+                <label style="float:right;font-size:24px;margin-right:15px;">总价：<span id="sum" style="color:red">0</span></label>
+            </div>
+        </div>
+    </div>
+    <script src="~/Scripts/jquery-3.2.1.min.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    <script src="~/bootstrap-table-develop/dist/bootstrap-table.js"></script>
+    <script src="~/layui/layui.all.js"></script>
+    <script src="~/Scripts/ajaxHelp.js"></script>
+    <script>
+        //关闭窗体
+        function Close() {
+            //parent.window.location.reload();
+            var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+            parent.layer.close(index);
+        }
+        $(function () {
+            //配置日历控件
+            layui.use('laydate', function () {
+                var laydate = layui.laydate;
+                laydate.render({
+                    elem: '#StockInDate', min: 1
+                });
+            });
+            //弹出客户选择窗体
+            $("#PPID").dblclick(function () {
+                layer.open({
+                    type: 2,
+                    area: ['800px', '400px'],
+                    scrollbar: false,
+                    title: ['双击选择供应商', 'font-weight:700'],
+                    content: ['/Shared/ProductLendList.html', 'auto'],
+                    success: function (layero, index) {
+                        var body = layer.getChildFrame("body", index);
+                        $(body).on("dblclick", "table>tbody>tr", function () {
+                            $("#PPID").val($(this).find("td:first-child").text());
+                            layer.close(index);
+                        });
+                    }
+                });
+            });
+            //弹出选择商品窗体
+            $("#stockInDepotDetailTable > tbody").on("dblclick", '[name="ProID"]', function () {
+                var tr = $(this).parents("tr");
+                layer.open({
+                    type: 2,
+                    area: ['800px', '400px'],
+                    scrollbar: false,
+                    title: ['双击选择商品', 'font-weight:700'],
+                    content: ['/Shared/ProductsList.html', 'auto'],
+                    success: function (layero, index) {
+                        var body = layer.getChildFrame("body", index);
+                        $(body).on("dblclick", "table>tbody>tr", function () {
+                            var id = $(this).find("td:first-child").text();
+                            var bool = true;
+                            $.each($("[name='ProID']"), function (i, obj) {
+                                bool = $(obj).val() != id;
+                                if (bool === false) {
+                                    layer.msg("该商品已选择！");
+                                    return false;
+                                }
+                            })
+                            if (bool) {
+                                $.getJSON("http://localhost:43727/api/Products/" + id, function (data) {
+                                    tr.find('[name=ProID]').val(data.ProID);
+                                    tr.find('[name=ProName]').val(data.ProName);
+                                    tr.find('[name=PTName]').val(data.PTName);
+                                    tr.find('[name=PUName]').val(data.PUName);
+                                    tr.find('[name=PSName]').val(data.PSName);
+                                    tr.find('[name=PCName]').val(data.PCName);
+                                    layer.close(index);
+                                });
+                            }
+                        });
+                    }
+                });
+            });
+            //表格添加行
+            $("#AddRow").click(function () {
+                $("#stockInDepotDetailTable>tbody").append('<tr><td><input class="form-control" name="ProID" type="text" readonly placeholder="双击选择商品" /></td><td><input class="form-control" name="ProName" readonly type="text" /></td><td><input class="form-control" name="PTName" readonly type="text" /></td><td><input class="form-control" name="PUName" readonly type="text" /></td><td><input class="form-control" name="PSName" readonly type="text" /></td><td><input class="form-control" name="PCName" readonly type="text" /></td><td><input class="form-control" name="ProPrice" placeholder="请输入商品价格" type="text" /></td><td><input class="form-control" name="SDetailDepAmount" type="text" placeholder="请输入商品数量" /></td><td><button class="btn btn-danger" id="RemoveRow" ><i class="glyphicon glyphicon-remove"></i></button></td></tr>');
+            });
+            //表格删除行
+            $("#stockInDepotDetailTable > tbody").on("click", "#RemoveRow", function () {
+                $(this).parents("tr").remove();
+                sum();
+            })
+            //验证数量输入
+            $("#stockInDepotDetailTable > tbody").on("blur", '[name="SDetailDepAmount"]', function () {
+                var ProPrice = $(this).parents("tr").find('[name="ProPrice"]').val();
+                var Count = $(this).val();
+                if (!/^\d*$/.test(Count)) {
+                    $(this).val("");
+                    layer.msg("数量输入不正确！");
+                    return;
+                }
+                if (ProPrice == "") {
+                    $(this).val("");
+                    layer.msg("请输入价格！");
+                    return;
+                }
+                sum();
+            });
+            //验证价格输入
+            $("#stockInDepotDetailTable > tbody").on("blur", '[name="ProPrice"]', function () {
+                var ProID = $(this).parents("tr").find('[name="ProID"]').val();
+                var ProPrice = $(this).val();
+                if (!/^(([0-9]+\.[0-9]*[1-9][0-9]*)|([0-9]*[1-9][0-9]*\.[0-9]+)|([0-9]*[1-9][0-9]*))$/.test(ProPrice)) {
+                    $(this).val("");
+                    layer.msg("价格输入不正确！");
+                    return;
+                }
+                if (ProID == "") {
+                    $(this).val("");
+                    layer.msg("请选择商品！");
+                    return;
+                }
+                sum();
+            });
+            $("#save").click(function () {
+                var Stock = serializeJson($("#StockForm"));
+                if (Stock.PPID == "" || Stock.StockInDate == "") {
+                    layer.msg("请填写完整采购单！");
+                    return false;
+                }
+                var StockDetail = Array();
+                var bool = true;
+                $.each($("table>tbody").find("tr"), function (i, obj) {
+                    var SDetailPrice = $(obj).find('[name="ProPrice"]').val();
+                    var SDetailAmount = $(obj).find('[name="SDetailDepAmount"]').val();
+                    var ProID = $(obj).find('[name="ProID"]').val();
+                    if (ProID == "" || SDetailAmount == "" || SDetailPrice == "") {
+                        bool = false;
+                        return false;
+                    }
+                    StockDetail[i] = { ProID: ProID, SDetailAmount: SDetailAmount, SDetailPrice: SDetailPrice }
+                })
+                if (bool && StockDetail.length != 0) {
+                    Stock.StockDetail = StockDetail;
+                    $.ajax({
+                        type: Stock.StockID == "" ? "post" : "put",//如果有编号就put提交，没有post就提交
+                        url: "http://localhost:43727/api/Stocks",
+                        data: Stock,
+                        success: function (rs) {
+                            if (rs) {
+                                Close();
+                            } else {
+                                layer.msg("操作失败");
+                            }
+                        }
+                    });
+                } else {
+                    layer.msg("请填写完整采购单详单！");
+                }
+            });
+        });
+        //计算总价
+        function sum() {
+            var sum = 0;
+            $.each($("#stockInDepotDetailTable > tbody>tr"), function (i, obj) {
+                var ProPrice = $(obj).find('[name="ProPrice"]').val();
+                var Count = $(obj).find('[name="SDetailDepAmount"]').val()
+                sum = eval(ProPrice + "*" + Count + "+" + sum)
+            });
+            sum = sum + "";
+            if (sum.indexOf(".") != -1) {
+                $("#sum").text(sum.substring(0, sum.indexOf(".") + 3));
+            } else {
+                $("#sum").text(sum);
+            }
+        }
+    </script>
+</body>
+</html>

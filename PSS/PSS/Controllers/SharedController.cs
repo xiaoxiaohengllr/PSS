@@ -8,23 +8,22 @@ using System.Web.Mvc;
 namespace PSS.Controllers
 {
     [UsersFilter]
-    public class BuyController : Controller
+    public class SharedController : Controller
     {
-        //商品库存
-        public ActionResult DepotStock()
+        //客户选择页面
+        public ActionResult CustomersList()
         {
             return View();
         }
-        //采购订单
-        public ActionResult Stocks()
+        //供应商选择页面
+        public ActionResult ProductLendList()
         {
             return View();
         }
-        //添加或修改采购订单
-        public ActionResult StocksEdit()
+        //商品类别选择页面
+        public ActionResult ProductsList()
         {
             return View();
         }
-
     }
 }

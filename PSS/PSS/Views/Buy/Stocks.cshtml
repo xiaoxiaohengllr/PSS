@@ -1,0 +1,210 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title></title>
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/bootstrap-table-develop/dist/bootstrap-table.css" rel="stylesheet" />
+    <link href="~/Content/bootstrap-select.min.css" rel="stylesheet" />
+    <link href="~/layui/css/layui.css" rel="stylesheet" />
+</head>
+<body>
+    <div class="panel panel-default">
+        <div class="panel-heading">采购订单</div>
+        <div class="panel-body">
+            <div id="btns" class="btn-group">
+                <button class="btn btn-success" id="AuditStocks"><i class="glyphicon glyphicon-user"></i>审核</button>
+                <button class="btn btn-primary" id="AddStocks"><i class="glyphicon glyphicon-save"></i>新增</button>
+                <button class="btn btn-info" id="EditStocks"><i class="glyphicon glyphicon-edit"></i>修改</button>
+                <button class="btn btn-danger" id="DeleteStocks"><i class="glyphicon glyphicon-remove"></i>删除</button>
+                <form class="form-inline" style="float:left; margin-left:10px;">
+                    <div class="form-group">
+                        <label for="PPName">供应商:</label>
+                        <input type="text" name="PPName" class="form-control" id="PPName" placeholder="请输入供应商">
+                    </div>
+                    <button type="button" id="search" class="btn btn-default">查询</button>
+                </form>
+            </div>
+            <table id="stocksTable" class="table table-bordered table-striped table-hover"></table>
+        </div>
+    </div>
+    <script src="~/Scripts/jquery-3.2.1.min.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    <script src="~/bootstrap-table-develop/dist/bootstrap-table.js"></script>
+    <script src="~/bootstrap-table-develop/dist/locale/bootstrap-table-zh-CN.min.js"></script>
+    <script src="~/bootstrap-table-develop/dist/extensions/export/bootstrap-table-export.min.js"></script>
+    <script src="~/bootstrap-table-develop/dist/extensions/export/tableExport.js"></script>
+    <script src="~/Scripts/bootstrap-select.min.js"></script>
+    <script src="~/layui/layui.all.js"></script>
+    <script src="~/Scripts/ajaxHelp.js"></script>
+    <script>
+        $("#search").click(function () {
+            var PPName = $("#PPName").val();
+            $.getJSON("http://localhost:43727/api/Stocks?order=asc&offset=0&limit=10&PPName=" + PPName, function (data) {
+                $("#stocksTable").bootstrapTable("load", data);
+            });
+        });
+        $("#stocksTable").bootstrapTable({
+            method: "get",
+            url: "http://localhost:43727/api/Stocks",
+            undefinedText: "",//当数据为 undefined 时显示的空字符
+            pagination: true, //表格底部显示分页条
+            paginationLoop: false,//禁用分页条无限循环的功能
+            toolbar: "#btns",
+            sidePagination: "server",
+            showExport: true,
+            pageNumber: 1,
+            pageSize: 10,
+            pageList: [5, 10, 20, "All"],
+            paginationPreText: "上一页",
+            paginationNextText: "下一页",
+            showColumns: true,
+            showRefresh: true,
+            clickToSelect: true,
+            queryParams: function (params) {
+                params.PPName = "";
+                return params;
+            },
+            columns: [
+                { checkbox: true },
+                { field: "StockID", title: "采购单编号" },
+                { field: "PPName", title: "供货商" },
+                {
+                    field: "StockDate", title: "下单时间", formatter: function (value, row, index) {
+                        return value.substring(0, 10)
+                    }
+                },
+                {
+                    field: "StockInDate", title: "预计交货时间", formatter: function (value, row, index) {
+                        return value.substring(0, 10)
+                    }
+                },
+                { field: "UsersName", title: "创建人" },
+                {
+                    field: "StockState", title: "审核状态 ", formatter: function (value, row, index) {
+                        return value == 2 ? "已审" : "未审";
+                    }
+                }
+            ]
+        });
+        $("#AddStocks").click(function () {
+            layer.open({
+                type: 2,
+                area: ['1200px', '600px'],
+                scrollbar: false,
+                title: ['新增采购订单', 'font-weight:700'],
+                content: ['/Buy/StocksEdit.html', 'auto'],
+                success: function (layero, index) {
+                    var body = layer.getChildFrame("body", index);
+                },
+                end: function () {
+                    //销毁时刷新
+                    $('#stocksTable').bootstrapTable("refresh");
+                }
+            });
+        });
+        $("#EditStocks").click(function () {
+            var row = $("#stocksTable").bootstrapTable("getSelections");
+            if (row.length != 1) {
+                layer.msg("请选择一条要修改的采购订单！");
+                return;
+            }
+            if (row[0].StockState == 2) {
+                layer.msg("采购订单已审核，不能修改！");
+                return;
+            }
+            layer.open({
+                type: 2,
+                area: ['1200px', '600px'],
+                scrollbar: false,
+                title: ['修改采购订单', 'font-weight:700'],
+                content: ['/Buy/StocksEdit.html', 'auto'],
+                success: function (layero, index) {
+                    var body = layer.getChildFrame("body", index);
+                    $.getJSON("http://localhost:43727/api/Stocks/" + row[0].StockID, function (data) {
+                        setForm($(body).find("#StockForm"), data);
+                        $(body).find("#StockForm").find("#StockDate").val($(body).find("#StockForm").find("#StockDate").val().substring(0, 10));
+                        $(body).find("#StockForm").find("#StockInDate").val($(body).find("#StockForm").find("#StockInDate").val().substring(0, 10));
+                        $.getJSON("http://localhost:43727/api/StockDetail?StockID=" + row[0].StockID, function (rs) {
+                            $.each(rs, function (i, obj) {
+                                console.log(obj);
+                                $(body).find("#stockInDepotDetailTable>tbody").append('<tr><td><input class="form-control" name="ProID" value="' + obj.ProID + '" type="text" readonly placeholder="双击选择商品" /></td><td><input class="form-control" name="ProName" value="' + obj.ProName + '" readonly type="text" /></td><td><input class="form-control" name="PTName" value="' + obj.PTName + '" readonly type="text" /></td><td><input class="form-control" name="PUName" value="' + obj.PUName + '" readonly type="text" /></td><td><input class="form-control" name="PSName" value="' + obj.PSName + '" readonly type="text" /></td><td><input class="form-control" name="PCName" value="' + obj.PCName + '" readonly type="text" /></td><td><input class="form-control" name="ProPrice" value="' + obj.SDetailPrice + '" placeholder="请输入商品价格" type="text" /></td><td><input class="form-control" name="SDetailDepAmount" type="text" value="' + obj.SDetailAmount + '" placeholder="请输入商品数量" /></td><td><button class="btn btn-danger" id="RemoveRow" ><i class="glyphicon glyphicon-remove"></i></button></td></tr>');
+                            });
+                            $(body).find("#stockInDepotDetailTable>tbody").find('[name="SDetailDepAmount"]:first-child').focus();
+                            $(body).find("#stockInDepotDetailTable>tbody").find('[name="SDetailDepAmount"]:first-child').blur();
+                        });
+                    })
+                },
+                end: function () {
+                    //销毁时刷新
+                    $('#stocksTable').bootstrapTable("refresh");
+                }
+            });
+        });
+        $("#DeleteStocks").click(function () {
+            var row = $("#stocksTable").bootstrapTable("getSelections");
+            if (row.length != 1) {
+                layer.msg("请选择一条要删除的采购订单！");
+                return;
+            }
+            if (row[0].StockState == 2) {
+                layer.msg("采购订单已审核，不能删除！");
+                return;
+            }
+            layer.confirm('您确定要删除此采购订单吗？', {
+                btn: ['确定', '取消'], //按钮
+                icon: 2
+            }, function () {
+                $.ajax({
+                    url: "http://localhost:43727/api/Stocks/" + row[0].StockID,
+                    type: "delete",
+                    success: function (data) {
+                        if (data) {
+                            layer.msg("删除成功！");
+                            $('#stocksTable').bootstrapTable("refresh");
+                        } else {
+                            layer.msg("删除失败！");
+                        }
+                    }
+                });
+            }, function () {
+            });
+        });
+        $("#AuditStocks").click(function () {
+            var row = $("#stocksTable").bootstrapTable("getSelections");
+            if (row.length != 1) {
+                layer.msg("请选择一条要删除的采购订单！");
+                return;
+            }
+            if (row[0].StockState == 2) {
+                layer.msg("采购订单已审核，不能审核！");
+                return;
+            }
+            layer.confirm('您确定要审核此采购订单吗？', {
+                btn: ['确定', '取消'], //按钮
+                icon: 2
+            }, function () {
+                $.ajax({
+                    url: "http://localhost:43727/api/Stocks?StockState=2&StockID=" + row[0].StockID,
+                    type: "get",
+                    success: function (data) {
+                        if (data) {
+                            layer.msg("审核成功！");
+                            $('#stocksTable').bootstrapTable("refresh");
+                        } else {
+                            layer.msg("审核失败！");
+                        }
+                    }
+                });
+            }, function () {
+            });
+        });
+    </script>
+</body>
+</html>

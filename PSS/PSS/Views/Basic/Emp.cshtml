@@ -88,7 +88,10 @@
                     { field: "EmpName", title: "员工姓名" },
                     { field: "EmpJob", title: "职位" },
                     { field: "EmpSex", title: "性别" },
-                    { field: "EmpBday", title: "生日" },
+                    {
+                        field: "EmpBday", title: "生日", formatter: function (value, row, index) {
+                            return value.substring(0, 10)
+                        }  },
                     { field: "EmpTCType", title: "提成方式" },
                     { field: "EmpTcRate", title: "提成比率" },
                     { field: "EmpMail", title: "联系电话" },
@@ -96,7 +99,7 @@
                     { field: "EmpAddr", title: "地址" },
                     { field: "DName", title: "所属部门" },
                     {
-                        field: "EmpState", title: "默认仓库", formatter: function (value, row, index) {
+                        field: "EmpState", title: "员工状态", formatter: function (value, row, index) {
                             return value == 1 ? "试用期 " : value == 2 ? "正式员工" : "离职 ";
                         }
                     }

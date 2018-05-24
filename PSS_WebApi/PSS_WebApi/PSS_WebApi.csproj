@@ -121,6 +121,7 @@
     <Compile Include="Controllers\ProductTypesController.cs" />
     <Compile Include="Controllers\ProductUnitController.cs" />
     <Compile Include="Controllers\QuotePriceController.cs" />
+    <Compile Include="Controllers\StockDetailController.cs" />
     <Compile Include="Controllers\StocksController.cs" />
     <Compile Include="Controllers\UsersController.cs" />
     <Compile Include="Controllers\UsersLoginController.cs" />

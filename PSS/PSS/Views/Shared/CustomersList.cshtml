@@ -1,0 +1,61 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title></title>
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/bootstrap-table-develop/dist/bootstrap-table.css" rel="stylesheet" />
+    <link href="~/Content/bootstrap-select.min.css" rel="stylesheet" />
+    <link href="~/layui/css/layui.css" rel="stylesheet" />
+    <link href="~/iCheck/all.css" rel="stylesheet" />
+</head>
+<body>
+    <table id="customersTable" class="table table-bordered table-striped table-hover"></table>
+    <script src="~/Scripts/jquery-3.2.1.min.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    <script src="~/bootstrap-table-develop/dist/bootstrap-table.js"></script>
+    <script src="~/bootstrap-table-develop/dist/locale/bootstrap-table-zh-CN.min.js"></script>
+    <script>
+        $(function () {
+            $("#customersTable").bootstrapTable({
+                method: "get",
+                url: "http://localhost:43727/api/Customers",
+                undefinedText: "",//当数据为 undefined 时显示的空字符
+                pagination: true, //表格底部显示分页条
+                paginationLoop: false,//禁用分页条无限循环的功能
+                toolbar: "#btns",
+                sidePagination: "server",
+                pageNumber: 1,
+                pageSize: 10,
+                pageList: [5, 10, 20, "All"],
+                paginationPreText: "上一页",
+                paginationNextText: "下一页",
+                detailFormatter: function (index, row) {
+                    return '<table class="container-fluid"><tr><td><label>传真:</label> &nbsp; <span>' + row.CusFax + '</span></td><td><label>E-Mail:</label> &nbsp; <span>' + row.CusMail + '</span></td><td><label>手机:</label> &nbsp; <span>' + row.CusPhone + '</span></td><td><label>网站:</label> &nbsp; <span>' + row.CusBank + '</span></td><td><label>银行:</label> &nbsp; <span>' + row.CusBank + '</span></td><td><label>地址:</label> &nbsp; <span>' + row.CusAddress + '</span></td></tr><tr><td><label>开发行:</label> &nbsp; <span>' + row.CusBankCreate + '</span></td><td><label>帐号:</label> &nbsp; <span>' + row.CusGoogs + '</span></td><td><label>税号:</label> &nbsp; <span>' + row.CusSGoogs + '</span></td><td><label>交易类型:</label> &nbsp; <span>' + row.CusRateType + '</span></td><td><label>期初应收:</label> &nbsp; <span>' + row.CusBeginIn + '</span></td><td><label>客户积分:</label> &nbsp; <span>' + row.CusSorce + '</span></td></tr><tr><td colspan="6"><label>备注:</label> &nbsp; <span>' + row.CusDesc + '</span></td></tr></table>';
+                },
+                queryParams: function (params) {
+                    params.name = "";
+                    params.CLID = 0;
+                    params.CTID = 0;
+                    return params;
+                },
+                columns: [
+                    { field: "CusID", title: "客户编号" },
+                    { field: "CusName", title: "客户名称" },
+                    { field: "CusCompany", title: "公司名称" },
+                    { field: "CusMan", title: "联系人" },
+                    { field: "CusTel", title: "联系电话" },
+                    { field: "CLName", title: "客户等级" },
+                    { field: "CTName", title: "客户类型" }
+                ]
+            });
+        })
+    </script>
+</body>
+</html>

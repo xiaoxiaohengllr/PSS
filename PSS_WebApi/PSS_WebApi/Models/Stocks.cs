@@ -14,6 +14,12 @@ namespace PSS_WebApi.Models
     
     public partial class Stocks
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public Stocks()
+        {
+            this.StockDetail = new HashSet<StockDetail>();
+        }
+    
         public string StockID { get; set; }
         public string PPID { get; set; }
         public Nullable<System.DateTime> StockDate { get; set; }
@@ -21,5 +27,10 @@ namespace PSS_WebApi.Models
         public Nullable<int> StockUser { get; set; }
         public Nullable<int> StockState { get; set; }
         public string StockDesc { get; set; }
+    
+        public virtual ProductLend ProductLend { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<StockDetail> StockDetail { get; set; }
+        public virtual Users Users { get; set; }
     }
 }

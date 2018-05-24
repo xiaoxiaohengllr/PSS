@@ -4,73 +4,77 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="1065410df9ba40c486b8d2df6f1ceb52" Name="Diagram1">
-        <EntityTypeShape EntityType="PSSModel.Bank" Width="1.5" PointX="10.75" PointY="1.625" IsExpanded="true" />
-        <EntityTypeShape EntityType="PSSModel.CheckDepot" Width="1.5" PointX="10.75" PointY="5.625" IsExpanded="true" />
-        <EntityTypeShape EntityType="PSSModel.CheckDepotDetail" Width="1.5" PointX="2.75" PointY="12.625" IsExpanded="true" />
-        <EntityTypeShape EntityType="PSSModel.Compose" Width="1.5" PointX="4.75" PointY="12.625" IsExpanded="true" />
-        <EntityTypeShape EntityType="PSSModel.ComposeDetail" Width="1.5" PointX="6.75" PointY="12.625" IsExpanded="true" />
-        <EntityTypeShape EntityType="PSSModel.CustomerLevel" Width="1.5" PointX="5.75" PointY="3.875" IsExpanded="true" />
-        <EntityTypeShape EntityType="PSSModel.CustomerOrder" Width="1.5" PointX="12.75" PointY="1.625" IsExpanded="true" />
-        <EntityTypeShape EntityType="PSSModel.CustomerOrderDetail" Width="1.5" PointX="12.75" PointY="5.625" IsExpanded="true" />
-        <EntityTypeShape EntityType="PSSModel.Customers" Width="1.5" PointX="8" PointY="2" IsExpanded="true" />
-        <EntityTypeShape EntityType="PSSModel.CustomerTypes" Width="1.5" PointX="5.75" PointY="0.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="PSSModel.Depots" Width="1.5" PointX="12.75" PointY="9.625" IsExpanded="true" />
-        <EntityTypeShape EntityType="PSSModel.DepotStock" Width="1.5" PointX="8.75" PointY="13.625" IsExpanded="true" />
-        <EntityTypeShape EntityType="PSSModel.Dept" Width="1.5" PointX="7.75" PointY="9.875" IsExpanded="true" />
-        <EntityTypeShape EntityType="PSSModel.DevolveDetail" Width="1.5" PointX="10.75" PointY="13.625" IsExpanded="true" />
-        <EntityTypeShape EntityType="PSSModel.Devolves" Width="1.5" PointX="12.75" PointY="13.625" IsExpanded="true" />
-        <EntityTypeShape EntityType="PSSModel.Emp" Width="1.5" PointX="10" PointY="8.875" IsExpanded="true" />
-        <EntityTypeShape EntityType="PSSModel.InOutDepot" Width="1.5" PointX="14.75" PointY="1.625" IsExpanded="true" />
-        <EntityTypeShape EntityType="PSSModel.InOutDepotDetail" Width="1.5" PointX="0.75" PointY="15.625" IsExpanded="true" />
-        <EntityTypeShape EntityType="PSSModel.LostDetail" Width="1.5" PointX="14.75" PointY="5.625" IsExpanded="true" />
-        <EntityTypeShape EntityType="PSSModel.Losts" Width="1.5" PointX="14.75" PointY="8.625" IsExpanded="true" />
-        <EntityTypeShape EntityType="PSSModel.OtherInDepot" Width="1.5" PointX="14.75" PointY="11.625" IsExpanded="true" />
-        <EntityTypeShape EntityType="PSSModel.OtherInDepotDetail" Width="1.5" PointX="14.75" PointY="14.625" IsExpanded="true" />
-        <EntityTypeShape EntityType="PSSModel.OtherOutDepot" Width="1.5" PointX="2.75" PointY="16.625" IsExpanded="true" />
-        <EntityTypeShape EntityType="PSSModel.OtherOutDepotDetail" Width="1.5" PointX="4.75" PointY="16.625" IsExpanded="true" />
-        <EntityTypeShape EntityType="PSSModel.PayOffDetail" Width="1.5" PointX="6.75" PointY="16.625" IsExpanded="true" />
-        <EntityTypeShape EntityType="PSSModel.PayOffs" Width="1.5" PointX="8.75" PointY="16.625" IsExpanded="true" />
-        <EntityTypeShape EntityType="PSSModel.PopedomRole" Width="1.5" PointX="16.75" PointY="1.625" IsExpanded="true" />
-        <EntityTypeShape EntityType="PSSModel.Popedoms" Width="1.5" PointX="16.75" PointY="4.625" IsExpanded="true" />
-        <EntityTypeShape EntityType="PSSModel.ProduceInDepot" Width="1.5" PointX="16.75" PointY="8.625" IsExpanded="true" />
-        <EntityTypeShape EntityType="PSSModel.ProduceInDepotDeteil" Width="1.5" PointX="16.75" PointY="11.625" IsExpanded="true" />
-        <EntityTypeShape EntityType="PSSModel.ProduceOutDepot" Width="1.5" PointX="10.75" PointY="17.625" IsExpanded="true" />
-        <EntityTypeShape EntityType="PSSModel.ProduceOutDepotDetail" Width="1.5" PointX="12.75" PointY="17.625" IsExpanded="true" />
-        <EntityTypeShape EntityType="PSSModel.ProductColor" Width="1.5" PointX="0.75" PointY="3.5" IsExpanded="true" />
-        <EntityTypeShape EntityType="PSSModel.ProductLend" Width="1.5" PointX="16.75" PointY="14.625" IsExpanded="true" />
-        <EntityTypeShape EntityType="PSSModel.ProductLendTypes" Width="1.5" PointX="18.75" PointY="1.625" IsExpanded="true" />
-        <EntityTypeShape EntityType="PSSModel.Products" Width="1.5" PointX="3" PointY="2" IsExpanded="true" />
-        <EntityTypeShape EntityType="PSSModel.ProductSpec" Width="1.5" PointX="0.75" PointY="6.625" IsExpanded="true" />
-        <EntityTypeShape EntityType="PSSModel.ProductTypes" Width="1.5" PointX="0.75" PointY="8.875" IsExpanded="true" />
-        <EntityTypeShape EntityType="PSSModel.ProductUnit" Width="1.5" PointX="0.75" PointY="11.625" IsExpanded="true" />
-        <EntityTypeShape EntityType="PSSModel.QuotePrice" Width="1.5" PointX="5" PointY="8.875" IsExpanded="true" />
-        <EntityTypeShape EntityType="PSSModel.QuotePriceDetail" Width="1.5" PointX="0.75" PointY="19.625" IsExpanded="true" />
-        <EntityTypeShape EntityType="PSSModel.Roles" Width="1.5" PointX="2.75" PointY="19.625" IsExpanded="true" />
-        <EntityTypeShape EntityType="PSSModel.SaleDepot" Width="1.5" PointX="18.75" PointY="4.625" IsExpanded="true" />
-        <EntityTypeShape EntityType="PSSModel.SaleDepotDetail" Width="1.5" PointX="4.75" PointY="19.625" IsExpanded="true" />
-        <EntityTypeShape EntityType="PSSModel.SaleReturn" Width="1.5" PointX="6.75" PointY="19.625" IsExpanded="true" />
-        <EntityTypeShape EntityType="PSSModel.SaleReturnDetail" Width="1.5" PointX="18.75" PointY="8.625" IsExpanded="true" />
-        <EntityTypeShape EntityType="PSSModel.SplitDetail" Width="1.5" PointX="18.75" PointY="11.625" IsExpanded="true" />
-        <EntityTypeShape EntityType="PSSModel.Splits" Width="1.5" PointX="18.75" PointY="14.625" IsExpanded="true" />
-        <EntityTypeShape EntityType="PSSModel.StockDetail" Width="1.5" PointX="14.75" PointY="19.625" IsExpanded="true" />
-        <EntityTypeShape EntityType="PSSModel.StockInDepot" Width="1.5" PointX="16.75" PointY="19.625" IsExpanded="true" />
-        <EntityTypeShape EntityType="PSSModel.StockInDepotDetail" Width="1.5" PointX="18.75" PointY="18.625" IsExpanded="true" />
-        <EntityTypeShape EntityType="PSSModel.StockOutDepot" Width="1.5" PointX="8.75" PointY="20.625" IsExpanded="true" />
-        <EntityTypeShape EntityType="PSSModel.StockOutDepotDetail" Width="1.5" PointX="10.75" PointY="20.625" IsExpanded="true" />
-        <EntityTypeShape EntityType="PSSModel.Stocks" Width="1.5" PointX="20.75" PointY="1.625" IsExpanded="true" />
-        <EntityTypeShape EntityType="PSSModel.Users" Width="1.5" PointX="2.75" PointY="9" IsExpanded="true" />
-        <EntityTypeShape EntityType="PSSModel.UsersRole" Width="1.5" PointX="20.75" PointY="5.625" IsExpanded="true" />
+      <Diagram DiagramId="61f81ed96641472780ce137a58284633" Name="Diagram1">
+        <EntityTypeShape EntityType="PSSModel.Bank" Width="1.5" PointX="5.75" PointY="6.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="PSSModel.CheckDepot" Width="1.5" PointX="0.75" PointY="13.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="PSSModel.CheckDepotDetail" Width="1.5" PointX="13.75" PointY="5.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="PSSModel.Compose" Width="1.5" PointX="13.75" PointY="8.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="PSSModel.ComposeDetail" Width="1.5" PointX="10.75" PointY="13.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="PSSModel.CustomerLevel" Width="1.5" PointX="8.75" PointY="9" IsExpanded="true" />
+        <EntityTypeShape EntityType="PSSModel.CustomerOrder" Width="1.5" PointX="13.75" PointY="12.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="PSSModel.CustomerOrderDetail" Width="1.5" PointX="15.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="PSSModel.Customers" Width="1.5" PointX="11" PointY="7.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="PSSModel.CustomerTypes" Width="1.5" PointX="8.75" PointY="11.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="PSSModel.Depots" Width="1.5" PointX="3" PointY="7.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="PSSModel.DepotStock" Width="1.5" PointX="5.25" PointY="2.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="PSSModel.Dept" Width="1.5" PointX="10.75" PointY="2" IsExpanded="true" />
+        <EntityTypeShape EntityType="PSSModel.DevolveDetail" Width="1.5" PointX="5.75" PointY="10.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="PSSModel.Devolves" Width="1.5" PointX="15.75" PointY="4.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="PSSModel.Emp" Width="1.5" PointX="13" PointY="1" IsExpanded="true" />
+        <EntityTypeShape EntityType="PSSModel.InOutDepot" Width="1.5" PointX="15.75" PointY="8.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="PSSModel.InOutDepotDetail" Width="1.5" PointX="15.75" PointY="12.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="PSSModel.LostDetail" Width="1.5" PointX="15.75" PointY="15.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="PSSModel.Losts" Width="1.5" PointX="0.75" PointY="16.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="PSSModel.OtherInDepot" Width="1.5" PointX="8.75" PointY="16.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="PSSModel.OtherInDepotDetail" Width="1.5" PointX="10.75" PointY="16.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="PSSModel.OtherOutDepot" Width="1.5" PointX="12.75" PointY="16.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="PSSModel.OtherOutDepotDetail" Width="1.5" PointX="17.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="PSSModel.PayOffDetail" Width="1.5" PointX="17.75" PointY="3.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="PSSModel.PayOffs" Width="1.5" PointX="17.75" PointY="6.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="PSSModel.PopedomRole" Width="1.5" PointX="17.75" PointY="9.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="PSSModel.Popedoms" Width="1.5" PointX="17.75" PointY="12.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="PSSModel.ProduceInDepot" Width="1.5" PointX="17.75" PointY="16.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="PSSModel.ProduceInDepotDeteil" Width="1.5" PointX="14.75" PointY="18.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="PSSModel.ProduceOutDepot" Width="1.5" PointX="19.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="PSSModel.ProduceOutDepotDetail" Width="1.5" PointX="0.75" PointY="19.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="PSSModel.ProductColor" Width="1.5" PointX="0.75" PointY="3.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="PSSModel.ProductLend" Width="1.5" PointX="3.75" PointY="11.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="PSSModel.ProductLendTypes" Width="1.5" PointX="2.75" PointY="19.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="PSSModel.Products" Width="1.5" PointX="3" PointY="1.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="PSSModel.ProductSpec" Width="1.5" PointX="0.75" PointY="6.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="PSSModel.ProductTypes" Width="1.5" PointX="0.75" PointY="8.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="PSSModel.ProductUnit" Width="1.5" PointX="0.75" PointY="11.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="PSSModel.QuotePrice" Width="1.5" PointX="6" PointY="18" IsExpanded="true" />
+        <EntityTypeShape EntityType="PSSModel.QuotePriceDetail" Width="1.5" PointX="19.75" PointY="3.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="PSSModel.Roles" Width="1.5" PointX="19.75" PointY="7.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="PSSModel.SaleDepot" Width="1.5" PointX="8.75" PointY="19.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="PSSModel.SaleDepotDetail" Width="1.5" PointX="19.75" PointY="10.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="PSSModel.SaleReturn" Width="1.5" PointX="10.75" PointY="19.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="PSSModel.SaleReturnDetail" Width="1.5" PointX="19.75" PointY="14.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="PSSModel.SplitDetail" Width="1.5" PointX="16.75" PointY="19.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="PSSModel.Splits" Width="1.5" PointX="19.75" PointY="17.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="PSSModel.StockDetail" Width="1.5" PointX="8.25" PointY="2.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="PSSModel.StockInDepot" Width="1.5" PointX="21.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="PSSModel.StockInDepotDetail" Width="1.5" PointX="21.75" PointY="4.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="PSSModel.StockOutDepot" Width="1.5" PointX="4.75" PointY="21.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="PSSModel.StockOutDepotDetail" Width="1.5" PointX="21.75" PointY="7.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="PSSModel.Stocks" Width="1.5" PointX="6" PointY="13.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="PSSModel.Users" Width="1.5" PointX="3.75" PointY="16.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="PSSModel.UsersRole" Width="1.5" PointX="21.75" PointY="10.75" IsExpanded="true" />
         <AssociationConnector Association="PSSModel.FK_Customers_CustomerLevel" ManuallyRouted="false" />
         <AssociationConnector Association="PSSModel.FK_Customers_CustomerTypes" ManuallyRouted="false" />
+        <AssociationConnector Association="PSSModel.FK_DepotStock_Depots" ManuallyRouted="false" />
+        <AssociationConnector Association="PSSModel.FK_DepotStock_Products" ManuallyRouted="false" />
         <AssociationConnector Association="PSSModel.FK_Emp_Dept" ManuallyRouted="false" />
         <AssociationConnector Association="PSSModel.FK_Products_ProductColor" ManuallyRouted="false" />
+        <AssociationConnector Association="PSSModel.FK_Stocks_ProductLend" ManuallyRouted="false" />
         <AssociationConnector Association="PSSModel.FK_Products_ProductSpec" ManuallyRouted="false" />
         <AssociationConnector Association="PSSModel.FK_Products_ProductTypes" ManuallyRouted="false" />
         <AssociationConnector Association="PSSModel.FK_Products_ProductUnit" ManuallyRouted="false" />
+        <AssociationConnector Association="PSSModel.FK_StockDetail_Products" ManuallyRouted="false" />
         <AssociationConnector Association="PSSModel.FK_QuotePrice_Users" ManuallyRouted="false" />
-        <AssociationConnector Association="PSSModel.FK_DepotStock_Depots" />
-        <AssociationConnector Association="PSSModel.FK_DepotStock_Products" />
+        <AssociationConnector Association="PSSModel.FK_StockDetail_Stocks" ManuallyRouted="false" />
+        <AssociationConnector Association="PSSModel.FK_Stocks_Users" ManuallyRouted="false" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

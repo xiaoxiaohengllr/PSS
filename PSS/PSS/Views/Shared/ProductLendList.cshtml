@@ -1,0 +1,57 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/bootstrap-table-develop/dist/bootstrap-table.css" rel="stylesheet" />
+    <link href="~/Content/bootstrap-select.min.css" rel="stylesheet" />
+    <link href="~/layui/css/layui.css" rel="stylesheet" />
+    <link href="~/iCheck/all.css" rel="stylesheet" />
+</head>
+<body>
+    <table id="productLend" class="table table-bordered table-striped table-hover"></table>
+    <script src="~/Scripts/jquery-3.2.1.min.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    <script src="~/bootstrap-table-develop/dist/bootstrap-table.js"></script>
+    <script src="~/bootstrap-table-develop/dist/locale/bootstrap-table-zh-CN.min.js"></script>
+    <script>
+        $(function () {
+            //绑定表格数据
+            $("#productLend").bootstrapTable({
+                method: "get",
+                url: "http://localhost:43727/api/ProductLend",
+                undefinedText: "",//当数据为 undefined 时显示的空字符
+                pagination: true, //表格底部显示分页条
+                paginationLoop: false,//禁用分页条无限循环的功能
+                toolbar: "#btns",
+                sidePagination: "server",
+                pageNumber: 1,
+                pageSize: 10,
+                pageList: [5, 10, 20, "All"],
+                paginationPreText: "上一页",
+                paginationNextText: "下一页",
+                detailFormatter: function (index, row) {
+                    return '<table class="container-fluid"><tr><td><label>地址:</label> &nbsp; <span>' + row.PPAddress + '</span></td><td><label>传真:</label> &nbsp; <span>' + row.PPFax + '</span></td><td><label>Email:</label> &nbsp; <span>' + row.PPEmail + '</span></td><td><label>网址:</label> &nbsp; <span>' + row.PPUrl + '</span></td><td><label>银行名称:</label> &nbsp; <span>' + row.PPBank + '</span></td><td><label>账号:</label> &nbsp; <span>' + row.PPGoods + '</span></td></tr><tr><td colspan="6"><label>备注:</label> &nbsp; <span>' + row.PPDesc + '</span></td></tr></table>';
+                },
+                queryParams: function (params) {
+                    params.name = "";
+                    return params;
+                },
+                columns: [
+                    { field: "PPID", title: "供货商编号" },
+                    { field: "PPName", title: "供应商名称" },
+                    { field: "PPCompany", title: "公司名称" },
+                    { field: "PPMan", title: "联系人" },
+                    { field: "PPTel", title: "联系电话" }
+                ]
+            });
+        });
+    </script>
+</body>
+</html>

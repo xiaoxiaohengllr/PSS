@@ -18,6 +18,7 @@ namespace PSS_WebApi.Models
         public Products()
         {
             this.DepotStock = new HashSet<DepotStock>();
+            this.StockDetail = new HashSet<StockDetail>();
         }
     
         public int ProID { get; set; }
@@ -37,11 +38,13 @@ namespace PSS_WebApi.Models
         public Nullable<int> ProState { get; set; }
         public string ProImg { get; set; }
     
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<DepotStock> DepotStock { get; set; }
         public virtual ProductColor ProductColor { get; set; }
         public virtual ProductSpec ProductSpec { get; set; }
         public virtual ProductTypes ProductTypes { get; set; }
         public virtual ProductUnit ProductUnit { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<DepotStock> DepotStock { get; set; }
+        public virtual ICollection<StockDetail> StockDetail { get; set; }
     }
 }

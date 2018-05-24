@@ -14,6 +14,12 @@ namespace PSS_WebApi.Models
     
     public partial class ProductLend
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public ProductLend()
+        {
+            this.Stocks = new HashSet<Stocks>();
+        }
+    
         public string PPID { get; set; }
         public string PPName { get; set; }
         public string PPCompany { get; set; }
@@ -28,5 +34,8 @@ namespace PSS_WebApi.Models
         public string PPDesc { get; set; }
         public Nullable<int> PPState { get; set; }
         public Nullable<bool> IsDefault { get; set; }
+    
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Stocks> Stocks { get; set; }
     }
 }

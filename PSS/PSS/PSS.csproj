@@ -595,6 +595,7 @@
     <Compile Include="Controllers\BasicController.cs" />
     <Compile Include="Controllers\BuyController.cs" />
     <Compile Include="Controllers\MainController.cs" />
+    <Compile Include="Controllers\SharedController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -622,6 +623,11 @@
     <Content Include="Views\Main\Login.cshtml" />
     <Content Include="Views\Buy\DepotStock.cshtml" />
     <Content Include="Views\Basic\CustomersType.cshtml" />
+    <Content Include="Views\Buy\Stocks.cshtml" />
+    <Content Include="Views\Buy\StocksEdit.cshtml" />
+    <Content Include="Views\Shared\CustomersList.cshtml" />
+    <Content Include="Views\Shared\ProductLendList.cshtml" />
+    <Content Include="Views\Shared\ProductsList.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
