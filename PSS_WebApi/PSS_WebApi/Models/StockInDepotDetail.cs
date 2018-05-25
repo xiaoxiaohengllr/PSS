@@ -15,10 +15,13 @@ namespace PSS_WebApi.Models
     public partial class StockInDepotDetail
     {
         public int SIDDID { get; set; }
-        public string ProID { get; set; }
+        public Nullable<int> ProID { get; set; }
         public string SIDID { get; set; }
         public Nullable<int> SIDDAmount { get; set; }
         public Nullable<decimal> SIDDPrice { get; set; }
         public string SIDDDesc { get; set; }
+    
+        public virtual Products Products { get; set; }
+        public virtual StockInDepot StockInDepot { get; set; }
     }
 }

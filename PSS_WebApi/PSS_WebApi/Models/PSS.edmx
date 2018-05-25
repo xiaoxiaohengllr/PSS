@@ -228,7 +228,7 @@
           </Key>
           <Property Name="IODDID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="IODID" Type="int" />
-          <Property Name="ProID" Type="varchar" MaxLength="50" />
+          <Property Name="ProID" Type="int" />
           <Property Name="IODDAmount" Type="int" />
           <Property Name="IODDPrice" Type="numeric" Precision="10" Scale="2" />
         </EntityType>
@@ -586,7 +586,7 @@
             <PropertyRef Name="SIDID" />
           </Key>
           <Property Name="SIDID" Type="char" MaxLength="14" Nullable="false" />
-          <Property Name="PPID" Type="char" MaxLength="12" />
+          <Property Name="PPID" Type="char" MaxLength="14" />
           <Property Name="DepotID" Type="char" MaxLength="6" />
           <Property Name="StockID" Type="char" MaxLength="14" />
           <Property Name="SIDDate" Type="datetime" />
@@ -601,7 +601,7 @@
             <PropertyRef Name="SIDDID" />
           </Key>
           <Property Name="SIDDID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="ProID" Type="varchar" MaxLength="50" />
+          <Property Name="ProID" Type="int" />
           <Property Name="SIDID" Type="char" MaxLength="14" />
           <Property Name="SIDDAmount" Type="int" />
           <Property Name="SIDDPrice" Type="numeric" Precision="10" Scale="2" />
@@ -804,6 +804,78 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_StockInDepot_Depots">
+          <End Role="Depots" Type="Self.Depots" Multiplicity="0..1" />
+          <End Role="StockInDepot" Type="Self.StockInDepot" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Depots">
+              <PropertyRef Name="DepotID" />
+            </Principal>
+            <Dependent Role="StockInDepot">
+              <PropertyRef Name="DepotID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_StockInDepot_StockInDepot">
+          <End Role="ProductLend" Type="Self.ProductLend" Multiplicity="0..1" />
+          <End Role="StockInDepot" Type="Self.StockInDepot" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ProductLend">
+              <PropertyRef Name="PPID" />
+            </Principal>
+            <Dependent Role="StockInDepot">
+              <PropertyRef Name="PPID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_StockInDepot_Stocks">
+          <End Role="Stocks" Type="Self.Stocks" Multiplicity="0..1" />
+          <End Role="StockInDepot" Type="Self.StockInDepot" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Stocks">
+              <PropertyRef Name="StockID" />
+            </Principal>
+            <Dependent Role="StockInDepot">
+              <PropertyRef Name="StockID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_StockInDepot_Users">
+          <End Role="Users" Type="Self.Users" Multiplicity="0..1" />
+          <End Role="StockInDepot" Type="Self.StockInDepot" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="UsersID" />
+            </Principal>
+            <Dependent Role="StockInDepot">
+              <PropertyRef Name="SIDUser" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_StockInDepotDetail_StockInDepot">
+          <End Role="StockInDepot" Type="Self.StockInDepot" Multiplicity="0..1" />
+          <End Role="StockInDepotDetail" Type="Self.StockInDepotDetail" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="StockInDepot">
+              <PropertyRef Name="SIDID" />
+            </Principal>
+            <Dependent Role="StockInDepotDetail">
+              <PropertyRef Name="SIDID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_StockInDepotDetail_StockInDepotDetail">
+          <End Role="Products" Type="Self.Products" Multiplicity="0..1" />
+          <End Role="StockInDepotDetail" Type="Self.StockInDepotDetail" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Products">
+              <PropertyRef Name="ProID" />
+            </Principal>
+            <Dependent Role="StockInDepotDetail">
+              <PropertyRef Name="ProID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_Stocks_ProductLend">
           <End Role="ProductLend" Type="Self.ProductLend" Multiplicity="0..1" />
           <End Role="Stocks" Type="Self.Stocks" Multiplicity="*" />
@@ -1002,6 +1074,30 @@
             <End Role="Stocks" EntitySet="Stocks" />
             <End Role="StockDetail" EntitySet="StockDetail" />
           </AssociationSet>
+          <AssociationSet Name="FK_StockInDepot_Depots" Association="Self.FK_StockInDepot_Depots">
+            <End Role="Depots" EntitySet="Depots" />
+            <End Role="StockInDepot" EntitySet="StockInDepot" />
+          </AssociationSet>
+          <AssociationSet Name="FK_StockInDepot_StockInDepot" Association="Self.FK_StockInDepot_StockInDepot">
+            <End Role="ProductLend" EntitySet="ProductLend" />
+            <End Role="StockInDepot" EntitySet="StockInDepot" />
+          </AssociationSet>
+          <AssociationSet Name="FK_StockInDepot_Stocks" Association="Self.FK_StockInDepot_Stocks">
+            <End Role="Stocks" EntitySet="Stocks" />
+            <End Role="StockInDepot" EntitySet="StockInDepot" />
+          </AssociationSet>
+          <AssociationSet Name="FK_StockInDepot_Users" Association="Self.FK_StockInDepot_Users">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="StockInDepot" EntitySet="StockInDepot" />
+          </AssociationSet>
+          <AssociationSet Name="FK_StockInDepotDetail_StockInDepot" Association="Self.FK_StockInDepotDetail_StockInDepot">
+            <End Role="StockInDepot" EntitySet="StockInDepot" />
+            <End Role="StockInDepotDetail" EntitySet="StockInDepotDetail" />
+          </AssociationSet>
+          <AssociationSet Name="FK_StockInDepotDetail_StockInDepotDetail" Association="Self.FK_StockInDepotDetail_StockInDepotDetail">
+            <End Role="Products" EntitySet="Products" />
+            <End Role="StockInDepotDetail" EntitySet="StockInDepotDetail" />
+          </AssociationSet>
           <AssociationSet Name="FK_Stocks_ProductLend" Association="Self.FK_Stocks_ProductLend">
             <End Role="ProductLend" EntitySet="ProductLend" />
             <End Role="Stocks" EntitySet="Stocks" />
@@ -1164,6 +1260,7 @@
           <Property Name="IsDefault" Type="Boolean" />
           <Property Name="DepotState" Type="Int32" />
           <NavigationProperty Name="DepotStock" Relationship="Self.FK_DepotStock_Depots" FromRole="Depots" ToRole="DepotStock" />
+          <NavigationProperty Name="StockInDepot" Relationship="Self.FK_StockInDepot_Depots" FromRole="Depots" ToRole="StockInDepot" />
         </EntityType>
         <EntityType Name="DepotStock">
           <Key>
@@ -1248,7 +1345,7 @@
           </Key>
           <Property Name="IODDID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="IODID" Type="Int32" />
-          <Property Name="ProID" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ProID" Type="Int32" />
           <Property Name="IODDAmount" Type="Int32" />
           <Property Name="IODDPrice" Type="Decimal" Precision="10" Scale="2" />
         </EntityType>
@@ -1431,6 +1528,7 @@
           <Property Name="PPDesc" Type="String" MaxLength="2000" FixedLength="false" Unicode="true" />
           <Property Name="PPState" Type="Int32" />
           <Property Name="IsDefault" Type="Boolean" />
+          <NavigationProperty Name="StockInDepot" Relationship="Self.FK_StockInDepot_StockInDepot" FromRole="ProductLend" ToRole="StockInDepot" />
           <NavigationProperty Name="Stocks" Relationship="Self.FK_Stocks_ProductLend" FromRole="ProductLend" ToRole="Stocks" />
         </EntityType>
         <EntityType Name="ProductLendTypes">
@@ -1468,6 +1566,7 @@
           <NavigationProperty Name="ProductTypes" Relationship="Self.FK_Products_ProductTypes" FromRole="Products" ToRole="ProductTypes" />
           <NavigationProperty Name="ProductUnit" Relationship="Self.FK_Products_ProductUnit" FromRole="Products" ToRole="ProductUnit" />
           <NavigationProperty Name="StockDetail" Relationship="Self.FK_StockDetail_Products" FromRole="Products" ToRole="StockDetail" />
+          <NavigationProperty Name="StockInDepotDetail" Relationship="Self.FK_StockInDepotDetail_StockInDepotDetail" FromRole="Products" ToRole="StockInDepotDetail" />
         </EntityType>
         <EntityType Name="ProductSpec">
           <Key>
@@ -1620,7 +1719,7 @@
             <PropertyRef Name="SIDID" />
           </Key>
           <Property Name="SIDID" Type="String" MaxLength="14" FixedLength="true" Unicode="false" Nullable="false" />
-          <Property Name="PPID" Type="String" MaxLength="12" FixedLength="true" Unicode="false" />
+          <Property Name="PPID" Type="String" MaxLength="14" FixedLength="true" Unicode="false" />
           <Property Name="DepotID" Type="String" MaxLength="6" FixedLength="true" Unicode="false" />
           <Property Name="StockID" Type="String" MaxLength="14" FixedLength="true" Unicode="false" />
           <Property Name="SIDDate" Type="DateTime" Precision="3" />
@@ -1629,17 +1728,24 @@
           <Property Name="SIDUser" Type="Int32" />
           <Property Name="SIDData" Type="Int32" />
           <Property Name="SIDDesc" Type="String" MaxLength="1000" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Depots" Relationship="Self.FK_StockInDepot_Depots" FromRole="StockInDepot" ToRole="Depots" />
+          <NavigationProperty Name="ProductLend" Relationship="Self.FK_StockInDepot_StockInDepot" FromRole="StockInDepot" ToRole="ProductLend" />
+          <NavigationProperty Name="Stocks" Relationship="Self.FK_StockInDepot_Stocks" FromRole="StockInDepot" ToRole="Stocks" />
+          <NavigationProperty Name="Users" Relationship="Self.FK_StockInDepot_Users" FromRole="StockInDepot" ToRole="Users" />
+          <NavigationProperty Name="StockInDepotDetail" Relationship="Self.FK_StockInDepotDetail_StockInDepot" FromRole="StockInDepot" ToRole="StockInDepotDetail" />
         </EntityType>
         <EntityType Name="StockInDepotDetail">
           <Key>
             <PropertyRef Name="SIDDID" />
           </Key>
           <Property Name="SIDDID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="ProID" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ProID" Type="Int32" />
           <Property Name="SIDID" Type="String" MaxLength="14" FixedLength="true" Unicode="false" />
           <Property Name="SIDDAmount" Type="Int32" />
           <Property Name="SIDDPrice" Type="Decimal" Precision="10" Scale="2" />
           <Property Name="SIDDDesc" Type="String" MaxLength="1000" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Products" Relationship="Self.FK_StockInDepotDetail_StockInDepotDetail" FromRole="StockInDepotDetail" ToRole="Products" />
+          <NavigationProperty Name="StockInDepot" Relationship="Self.FK_StockInDepotDetail_StockInDepot" FromRole="StockInDepotDetail" ToRole="StockInDepot" />
         </EntityType>
         <EntityType Name="StockOutDepot">
           <Key>
@@ -1678,6 +1784,7 @@
           <Property Name="StockDesc" Type="String" MaxLength="1000" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="ProductLend" Relationship="Self.FK_Stocks_ProductLend" FromRole="Stocks" ToRole="ProductLend" />
           <NavigationProperty Name="StockDetail" Relationship="Self.FK_StockDetail_Stocks" FromRole="Stocks" ToRole="StockDetail" />
+          <NavigationProperty Name="StockInDepot" Relationship="Self.FK_StockInDepot_Stocks" FromRole="Stocks" ToRole="StockInDepot" />
           <NavigationProperty Name="Users" Relationship="Self.FK_Stocks_Users" FromRole="Stocks" ToRole="Users" />
         </EntityType>
         <EntityType Name="Users">
@@ -1689,6 +1796,7 @@
           <Property Name="UserLoginName" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
           <Property Name="UserLoginPwd" Type="String" MaxLength="20" FixedLength="true" Unicode="false" />
           <NavigationProperty Name="QuotePrice" Relationship="Self.FK_QuotePrice_Users" FromRole="Users" ToRole="QuotePrice" />
+          <NavigationProperty Name="StockInDepot" Relationship="Self.FK_StockInDepot_Users" FromRole="Users" ToRole="StockInDepot" />
           <NavigationProperty Name="Stocks" Relationship="Self.FK_Stocks_Users" FromRole="Users" ToRole="Stocks" />
         </EntityType>
         <EntityType Name="UsersRole">
@@ -1735,6 +1843,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_StockInDepot_Depots">
+          <End Role="Depots" Type="Self.Depots" Multiplicity="0..1" />
+          <End Role="StockInDepot" Type="Self.StockInDepot" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Depots">
+              <PropertyRef Name="DepotID" />
+            </Principal>
+            <Dependent Role="StockInDepot">
+              <PropertyRef Name="DepotID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_DepotStock_Products">
           <End Role="Products" Type="Self.Products" Multiplicity="0..1" />
           <End Role="DepotStock" Type="Self.DepotStock" Multiplicity="*" />
@@ -1768,6 +1888,18 @@
             </Principal>
             <Dependent Role="Products">
               <PropertyRef Name="PCID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_StockInDepot_StockInDepot">
+          <End Role="ProductLend" Type="Self.ProductLend" Multiplicity="0..1" />
+          <End Role="StockInDepot" Type="Self.StockInDepot" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ProductLend">
+              <PropertyRef Name="PPID" />
+            </Principal>
+            <Dependent Role="StockInDepot">
+              <PropertyRef Name="PPID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -1831,6 +1963,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_StockInDepotDetail_StockInDepotDetail">
+          <End Role="Products" Type="Self.Products" Multiplicity="0..1" />
+          <End Role="StockInDepotDetail" Type="Self.StockInDepotDetail" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Products">
+              <PropertyRef Name="ProID" />
+            </Principal>
+            <Dependent Role="StockInDepotDetail">
+              <PropertyRef Name="ProID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_QuotePrice_Users">
           <End Role="Users" Type="Self.Users" Multiplicity="0..1" />
           <End Role="QuotePrice" Type="Self.QuotePrice" Multiplicity="*" />
@@ -1852,6 +1996,42 @@
             </Principal>
             <Dependent Role="StockDetail">
               <PropertyRef Name="StockID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_StockInDepot_Stocks">
+          <End Role="Stocks" Type="Self.Stocks" Multiplicity="0..1" />
+          <End Role="StockInDepot" Type="Self.StockInDepot" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Stocks">
+              <PropertyRef Name="StockID" />
+            </Principal>
+            <Dependent Role="StockInDepot">
+              <PropertyRef Name="StockID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_StockInDepot_Users">
+          <End Role="Users" Type="Self.Users" Multiplicity="0..1" />
+          <End Role="StockInDepot" Type="Self.StockInDepot" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="UsersID" />
+            </Principal>
+            <Dependent Role="StockInDepot">
+              <PropertyRef Name="SIDUser" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_StockInDepotDetail_StockInDepot">
+          <End Role="StockInDepot" Type="Self.StockInDepot" Multiplicity="0..1" />
+          <End Role="StockInDepotDetail" Type="Self.StockInDepotDetail" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="StockInDepot">
+              <PropertyRef Name="SIDID" />
+            </Principal>
+            <Dependent Role="StockInDepotDetail">
+              <PropertyRef Name="SIDID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -1936,6 +2116,10 @@
             <End Role="Depots" EntitySet="Depots" />
             <End Role="DepotStock" EntitySet="DepotStock" />
           </AssociationSet>
+          <AssociationSet Name="FK_StockInDepot_Depots" Association="Self.FK_StockInDepot_Depots">
+            <End Role="Depots" EntitySet="Depots" />
+            <End Role="StockInDepot" EntitySet="StockInDepot" />
+          </AssociationSet>
           <AssociationSet Name="FK_DepotStock_Products" Association="Self.FK_DepotStock_Products">
             <End Role="Products" EntitySet="Products" />
             <End Role="DepotStock" EntitySet="DepotStock" />
@@ -1947,6 +2131,10 @@
           <AssociationSet Name="FK_Products_ProductColor" Association="Self.FK_Products_ProductColor">
             <End Role="ProductColor" EntitySet="ProductColor" />
             <End Role="Products" EntitySet="Products" />
+          </AssociationSet>
+          <AssociationSet Name="FK_StockInDepot_StockInDepot" Association="Self.FK_StockInDepot_StockInDepot">
+            <End Role="ProductLend" EntitySet="ProductLend" />
+            <End Role="StockInDepot" EntitySet="StockInDepot" />
           </AssociationSet>
           <AssociationSet Name="FK_Stocks_ProductLend" Association="Self.FK_Stocks_ProductLend">
             <End Role="ProductLend" EntitySet="ProductLend" />
@@ -1968,6 +2156,10 @@
             <End Role="Products" EntitySet="Products" />
             <End Role="StockDetail" EntitySet="StockDetail" />
           </AssociationSet>
+          <AssociationSet Name="FK_StockInDepotDetail_StockInDepotDetail" Association="Self.FK_StockInDepotDetail_StockInDepotDetail">
+            <End Role="Products" EntitySet="Products" />
+            <End Role="StockInDepotDetail" EntitySet="StockInDepotDetail" />
+          </AssociationSet>
           <AssociationSet Name="FK_QuotePrice_Users" Association="Self.FK_QuotePrice_Users">
             <End Role="Users" EntitySet="Users" />
             <End Role="QuotePrice" EntitySet="QuotePrice" />
@@ -1975,6 +2167,18 @@
           <AssociationSet Name="FK_StockDetail_Stocks" Association="Self.FK_StockDetail_Stocks">
             <End Role="Stocks" EntitySet="Stocks" />
             <End Role="StockDetail" EntitySet="StockDetail" />
+          </AssociationSet>
+          <AssociationSet Name="FK_StockInDepot_Stocks" Association="Self.FK_StockInDepot_Stocks">
+            <End Role="Stocks" EntitySet="Stocks" />
+            <End Role="StockInDepot" EntitySet="StockInDepot" />
+          </AssociationSet>
+          <AssociationSet Name="FK_StockInDepot_Users" Association="Self.FK_StockInDepot_Users">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="StockInDepot" EntitySet="StockInDepot" />
+          </AssociationSet>
+          <AssociationSet Name="FK_StockInDepotDetail_StockInDepot" Association="Self.FK_StockInDepotDetail_StockInDepot">
+            <End Role="StockInDepot" EntitySet="StockInDepot" />
+            <End Role="StockInDepotDetail" EntitySet="StockInDepotDetail" />
           </AssociationSet>
           <AssociationSet Name="FK_Stocks_Users" Association="Self.FK_Stocks_Users">
             <End Role="Users" EntitySet="Users" />

@@ -25,5 +25,15 @@ namespace PSS.Controllers
         {
             return View();
         }
+        //仓库选择页面
+        public ActionResult DepotsList()
+        {
+            return View();
+        }
+        //采购单选择页面
+        public ActionResult List()
+        {
+            return View();
+        }
     }
 }

@@ -25,6 +25,15 @@ namespace PSS.Controllers
         {
             return View();
         }
+        //入库订单
+        public ActionResult StockInDepot()
+        {
+            return View();
+        }
+        //添加修改入库订单
+        public ActionResult StockInDepotEdit() {
+            return View();
+        }
 
     }
 }

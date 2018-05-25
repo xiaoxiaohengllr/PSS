@@ -16,7 +16,7 @@ namespace PSS_WebApi.Models
     {
         public int IODDID { get; set; }
         public Nullable<int> IODID { get; set; }
-        public string ProID { get; set; }
+        public Nullable<int> ProID { get; set; }
         public Nullable<int> IODDAmount { get; set; }
         public Nullable<decimal> IODDPrice { get; set; }
     }

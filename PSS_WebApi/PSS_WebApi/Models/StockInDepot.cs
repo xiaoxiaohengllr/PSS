@@ -14,6 +14,12 @@ namespace PSS_WebApi.Models
     
     public partial class StockInDepot
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public StockInDepot()
+        {
+            this.StockInDepotDetail = new HashSet<StockInDepotDetail>();
+        }
+    
         public string SIDID { get; set; }
         public string PPID { get; set; }
         public string DepotID { get; set; }
@@ -24,5 +30,12 @@ namespace PSS_WebApi.Models
         public Nullable<int> SIDUser { get; set; }
         public Nullable<int> SIDData { get; set; }
         public string SIDDesc { get; set; }
+    
+        public virtual Depots Depots { get; set; }
+        public virtual ProductLend ProductLend { get; set; }
+        public virtual Stocks Stocks { get; set; }
+        public virtual Users Users { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<StockInDepotDetail> StockInDepotDetail { get; set; }
     }
 }

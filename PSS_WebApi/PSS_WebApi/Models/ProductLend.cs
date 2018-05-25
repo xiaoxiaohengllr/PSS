@@ -17,6 +17,7 @@ namespace PSS_WebApi.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public ProductLend()
         {
+            this.StockInDepot = new HashSet<StockInDepot>();
             this.Stocks = new HashSet<Stocks>();
         }
     
@@ -35,6 +36,8 @@ namespace PSS_WebApi.Models
         public Nullable<int> PPState { get; set; }
         public Nullable<bool> IsDefault { get; set; }
     
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<StockInDepot> StockInDepot { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Stocks> Stocks { get; set; }
     }

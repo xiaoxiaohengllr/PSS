@@ -18,6 +18,7 @@ namespace PSS_WebApi.Models
         public Users()
         {
             this.QuotePrice = new HashSet<QuotePrice>();
+            this.StockInDepot = new HashSet<StockInDepot>();
             this.Stocks = new HashSet<Stocks>();
         }
     
@@ -28,6 +29,8 @@ namespace PSS_WebApi.Models
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<QuotePrice> QuotePrice { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<StockInDepot> StockInDepot { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Stocks> Stocks { get; set; }
     }

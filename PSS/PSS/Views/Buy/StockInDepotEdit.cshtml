@@ -1,0 +1,347 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title></title>
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/bootstrap-table-develop/dist/bootstrap-table.css" rel="stylesheet" />
+    <link href="~/Content/bootstrap-select.min.css" rel="stylesheet" />
+    <link href="~/layui/css/layui.css" rel="stylesheet" />
+</head>
+<body>
+    <div class="panel panel-default">
+        <div class="panel panel-heading">
+            <form class="form-inline" id="StockInDepotForm">
+                <table width="100%">
+                    <tr>
+                        <td>
+                            <div class="form-group">
+                                <label for="PPID">供货商</label>
+                                <input type="text" class="form-control" id="PPID" name="PPID" readonly placeholder="双击选择供货商">
+                            </div>
+                        </td>
+                        <td>
+                            <div class="form-group">
+                                <label for="DepotID">仓库</label>
+                                <input type="text" class="form-control" id="DepotID" name="DepotID" readonly placeholder="双击选择仓库">
+                            </div>
+                        </td>
+                        <td>
+                            <div class="form-group">
+                                <label for="SIDDate">收货日期</label>
+                                <input type="text" class="form-control" id="SIDDate" name="SIDDate" readonly placeholder="请选择下单日期">
+                            </div>
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="form-group">
+                                <label for="StockID">采购单</label>
+                                <input type="text" class="form-control" id="StockID" name="StockID" readonly placeholder="双击选择采购单">
+                            </div>
+
+                        </td>
+                        <td>
+                            <div class="form-group">
+                                <label for="SIDFreight">运费</label>
+                                <input type="text" class="form-control" id="SIDFreight" name="SIDFreight">
+                            </div>
+                        </td>
+                        <td>
+                            <div class="form-group">
+                                <label for="SIDDeliver">送货单号</label>
+                                <input type="text" class="form-control" id="SIDDeliver" name="SIDDeliver">
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+                <input type="hidden" name="SIDID" />
+                <input type="hidden" name="SIDUser" value="@((Session["user"] as PSS.Models.Users).UsersID)" />
+            </form>
+        </div>
+        <div class="panel-body">
+            <table id="stockInDepotDetailTable" class="table table-bordered table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>商品编号</th>
+                        <th>商品名称</th>
+                        <th>商品类别</th>
+                        <th>商品单位</th>
+                        <th>商品规格</th>
+                        <th>商品颜色</th>
+                        <th>商品价格</th>
+                        <th>商品入库数量</th>
+                        <th style="width:40px;"><button class="btn btn-primary" id="AddRow"><i class="glyphicon glyphicon-plus"></i></button></th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+            <div class="container">
+                <button class="btn btn-primary" id="save" style="float:right"><i class="glyphicon glyphicon-save"></i>保存</button>
+                <label style="float:right;font-size:24px;margin-right:15px;">总价：<span id="sum" style="color:red">0</span></label>
+            </div>
+        </div>
+    </div>
+    <script src="~/Scripts/jquery-3.2.1.min.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    <script src="~/bootstrap-table-develop/dist/bootstrap-table.js"></script>
+    <script src="~/bootstrap-table-develop/dist/locale/bootstrap-table-zh-CN.min.js"></script>
+    <script src="~/layui/layui.all.js"></script>
+    <script src="~/Scripts/ajaxHelp.js"></script>
+    <script>
+        //关闭窗体
+        function Close() {
+            //parent.window.location.reload();
+            var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+            parent.layer.close(index);
+        }
+        $(function () {
+            layui.use('laydate', function () {
+                var laydate = layui.laydate;
+                laydate.render({
+                    elem: '#SIDDate', min: 1
+                });
+            });
+            //弹出供应商选择窗体
+            $("#PPID").dblclick(function () {
+                layer.open({
+                    type: 2,
+                    area: ['800px', '400px'],
+                    scrollbar: false,
+                    title: ['双击选择供应商', 'font-weight:700'],
+                    content: ['/Shared/ProductLendList.html', 'auto'],
+                    success: function (layero, index) {
+                        var body = layer.getChildFrame("body", index);
+                        $(body).on("dblclick", "table>tbody>tr", function () {
+                            $("#PPID").val($(this).find("td:first-child").text());
+                            layer.close(index);
+                        });
+                    }
+                });
+            });
+            //弹出仓库选择窗体
+            $("#DepotID").dblclick(function () {
+                layer.open({
+                    type: 2,
+                    area: ['800px', '400px'],
+                    scrollbar: false,
+                    title: ['双击选择仓库', 'font-weight:700'],
+                    content: ['/Shared/DepotsList.html', 'auto'],
+                    success: function (layero, index) {
+                        var body = layer.getChildFrame("body", index);
+                        $(body).on("dblclick", "table>tbody>tr", function () {
+                            $("#DepotID").val($(this).find("td:first-child").text());
+                            layer.close(index);
+                        });
+                    }
+                });
+            });
+            //弹出采购订单窗体
+            $("#StockID").dblclick(function () {
+                var PPID = $("#PPID").val();
+                var SIDID = $("[name=SIDID]").val();
+                if (PPID == "") {
+                    layer.msg("请选择供应商！");
+                    return;
+                }
+                layer.open({
+                    type: 2,
+                    area: ['800px', '400px'],
+                    scrollbar: false,
+                    title: ['双击选择采购订单', 'font-weight:700'],
+                    content: ['/Shared/List.html', 'auto'],
+                    success: function (layero, index) {
+                        var body = layer.getChildFrame("body", index);
+                        //加载采购订单
+                        $(body).find("#stocksTable").bootstrapTable({
+                            method: "get",
+                            url: "http://localhost:43727/api/Stocks",
+                            undefinedText: "",//当数据为 undefined 时显示的空字符
+                            pagination: true, //表格底部显示分页条
+                            paginationLoop: false,//禁用分页条无限循环的功能
+                            toolbar: "#btns",
+                            sidePagination: "server",
+                            pageNumber: 1,
+                            pageSize: 10,
+                            pageList: [5, 10, 20, "All"],
+                            paginationPreText: "上一页",
+                            paginationNextText: "下一页",
+                            queryParams: function (params) {
+                                params.StockState = 2;
+                                params.PPID = PPID;
+                                params.SIDID = SIDID;
+                                return params;
+                            },
+                            columns: [
+                                { field: "StockID", title: "采购单编号" },
+                                { field: "PPName", title: "供货商" },
+                                {
+                                    field: "StockDate", title: "下单时间", formatter: function (value, row, index) {
+                                        return value.substring(0, 10)
+                                    }
+                                },
+                                {
+                                    field: "StockInDate", title: "预计交货时间", formatter: function (value, row, index) {
+                                        return value.substring(0, 10)
+                                    }
+                                },
+                                { field: "UsersName", title: "创建人" }
+                            ]
+                        });
+                        //双击选择采购订单
+                        $(body).on("dblclick", "table>tbody>tr", function () {
+                            $("#StockID").val($(this).find("td:first-child").text() == "没有找到匹配的记录" ? "" : $(this).find("td:first-child").text());
+                            $("#stockInDepotDetailTable>tbody").empty();
+                            layer.close(index);
+                        });
+                    }
+                });
+            });
+            //表格添加行
+            $("#AddRow").click(function () {
+                $("#stockInDepotDetailTable>tbody").append('<tr><td><input class="form-control" name="ProID" type="text" readonly placeholder="双击选择采购详细编号" /></td><td><input class="form-control" name="ProName" readonly type="text" /></td><td><input class="form-control" name="PTName" readonly type="text" /></td><td><input class="form-control" name="PUName" readonly type="text" /></td><td><input class="form-control" name="PSName" readonly type="text" /></td><td><input class="form-control" name="PCName" readonly type="text" /></td><td><input class="form-control" name="SIDDPrice" placeholder="请输入商品价格" readonly type="text" /></td><td><input class="form-control" name="SIDDAmount" readonly type="text" placeholder="请输入商品数量" /></td><td><button class="btn btn-danger" id="RemoveRow" ><i class="glyphicon glyphicon-remove"></i></button></td></tr>');
+            });
+            //表格删除行
+            $("#stockInDepotDetailTable > tbody").on("click", "#RemoveRow", function () {
+                $(this).parents("tr").remove();
+                sum();
+            })
+            //弹出采购详细单选择窗体
+            $("#stockInDepotDetailTable > tbody").on("dblclick", '[name="ProID"]', function () {
+                var StockID = $("#StockID").val();
+                if (StockID == "") {
+                    layer.msg("请选择采购单！");
+                    return;
+                }
+                var tr = $(this).parents("tr");
+                layer.open({
+                    type: 2,
+                    area: ['800px', '400px'],
+                    scrollbar: false,
+                    title: ['双击选择采购详细订单', 'font-weight:700'],
+                    content: ['/Shared/List.html', 'auto'],
+                    success: function (layero, index) {
+                        var body = layer.getChildFrame("body", index);
+                        //加载采购详细单
+                        $(body).find("#stocksTable").bootstrapTable({
+                            method: "get",
+                            url: "http://localhost:43727/api/StockDetail",
+                            undefinedText: "",//当数据为 undefined 时显示的空字符
+                            pagination: true, //表格底部显示分页条
+                            paginationLoop: false,//禁用分页条无限循环的功能
+                            toolbar: "#btns",
+                            sidePagination: "server",
+                            pageNumber: 1,
+                            pageSize: 10,
+                            pageList: [5, 10, 20, "All"],
+                            paginationPreText: "上一页",
+                            paginationNextText: "下一页",
+                            queryParams: function (params) {
+                                params.StockID = StockID;
+                                return params;
+                            },
+                            columns: [
+                                { field: "ProID", title: "商品编号" },
+                                { field: "ProName", title: "商品名称" },
+                                { field: "StockID", title: "采购单编号" },
+                                { field: "SDetailAmount", title: "数量" },
+                                { field: "SDetailPrice", title: "价格" },
+                                { field: "SDetailDepAmount", title: "入库数量" },
+                                { field: "SDetailID", title: "采购单详单编号" }
+                            ]
+                        });
+                        $(body).on("dblclick", "table>tbody>tr", function () {
+                            var id = $(this).find("td:first-child").text();
+                            var bool = true;
+                            $.each($("[name='ProID']"), function (i, obj) {
+                                bool = $(obj).val() != id;
+                                if (bool === false) {
+                                    layer.msg("该采购详细订单已选择！");
+                                    return false;
+                                }
+                            })
+                            if (bool) {
+                                $.getJSON("http://localhost:43727/api/StockDetail/" + $(this).find("td:last-child").text(), function (data) {
+                                    console.log(tr);
+                                    console.log(data);
+                                    tr.find('[name=ProID]').val(data.ProID);
+                                    tr.find('[name=ProName]').val(data.ProName);
+                                    tr.find('[name=PTName]').val(data.PTName);
+                                    tr.find('[name=PUName]').val(data.PUName);
+                                    tr.find('[name=PSName]').val(data.PSName);
+                                    tr.find('[name=PCName]').val(data.PCName);
+                                    tr.find('[name=SIDDPrice]').val(data.SDetailPrice);
+                                    tr.find('[name=SIDDAmount]').val(data.SDetailAmount);
+                                    sum();
+                                    layer.close(index);
+                                });
+                            }
+                        });
+                    }
+                });
+            });
+            $("#save").click(function () {
+                var StockInDepot = serializeJson($("#StockInDepotForm"));
+                if (StockInDepot.DepotID == "" || StockInDepot.SIDDate == "" || StockInDepot.SIDDeliver == "" || StockInDepot.SIDFreight == "" || StockInDepot.StockID == "" || StockInDepot.PPID == "") {
+                    layer.msg("请填写完整采购入库单！");
+                    return false;
+                } else if (!/^(([0-9]+\.[0-9]*[1-9][0-9]*)|([0-9]*[1-9][0-9]*\.[0-9]+)|([0-9]*[1-9][0-9]*))$/.test(StockInDepot.SIDFreight)) {
+                    layer.msg("请填写正确的运费！");
+                    return false;
+                }
+                var StockInDepotDetail = Array();
+                var bool = true;
+                $.each($("#stockInDepotDetailTable>tbody").find("tr"), function (i, obj) {
+                    console.log(obj)
+                    var SIDDPrice = $(obj).find('[name="SIDDPrice"]').val();
+                    var SIDDAmount = $(obj).find('[name="SIDDAmount"]').val();
+                    var ProID = $(obj).find('[name="ProID"]').val();
+                    if (ProID == "" || SIDDAmount == "" || SIDDPrice == "") {
+                        bool = false;
+                        return false;
+                    }
+                    StockInDepotDetail[i] = { ProID: ProID, SIDDAmount: SIDDAmount, SIDDPrice: SIDDPrice }
+                })
+                if (bool && StockInDepotDetail.length != 0) {
+                    StockInDepot.StockInDepotDetail = StockInDepotDetail;
+                    $.ajax({
+                        type: StockInDepot.SIDID == "" ? "post" : "put",//如果有编号就put提交，没有post就提交
+                        url: "http://localhost:43727/api/StockInDepot",
+                        data: StockInDepot,
+                        success: function (rs) {
+                            if (rs) {
+                                Close();
+                            } else {
+                                layer.msg("操作失败");
+                            }
+                        }
+                    });
+                } else {
+                    layer.msg("请填写完整采购入库单详单！");
+                }
+            });
+        })
+        function sum() {
+            var sum = 0;
+            $.each($("#stockInDepotDetailTable > tbody > tr"), function (i, obj) {
+                var SIDDPrice = $(obj).find('[name="SIDDPrice"]').val();
+                var SIDDAmount = $(obj).find('[name="SIDDAmount"]').val(); 
+                sum = eval(SIDDPrice + "*" + SIDDAmount + "+" + sum)
+            });
+            sum = sum + "";
+            if (sum.indexOf(".") != -1) {
+                $("#sum").text(sum.substring(0, sum.indexOf(".") + 3));
+            } else {
+                $("#sum").text(sum);
+            }
+        }
+    </script>
+</body>
+</html>

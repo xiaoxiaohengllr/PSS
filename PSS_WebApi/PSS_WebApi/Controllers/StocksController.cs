@@ -43,7 +43,7 @@ namespace PSS_WebApi.Controllers
             }
         }
         //修改采购单状态
-        public async Task<IHttpActionResult> Get_Stocks_EditStockState_Async(int StockState,string StockID)
+        public async Task<IHttpActionResult> Get_Stocks_EditStockState_Async(int StockState, string StockID)
         {
             using (PSSEntities db = new PSSEntities())
             {
@@ -53,7 +53,7 @@ namespace PSS_WebApi.Controllers
             }
         }
         //采购单条件查询分页
-        public async Task<IHttpActionResult> Get_Stocks_SelectPage_Async(int limit, int offset, string order, string PPName)
+        public async Task<IHttpActionResult> Get_Stocks_SelectWherePage_Async(int limit, int offset, string order, string PPName)
         {
             using (PSSEntities db = new PSSEntities())
             {
@@ -61,6 +61,30 @@ namespace PSS_WebApi.Controllers
                 {
                     total = await db.Stocks.Where(s => string.IsNullOrEmpty(PPName) || s.ProductLend.PPName == PPName).CountAsync(),
                     rows = await db.Stocks.Where(s => string.IsNullOrEmpty(PPName) || s.ProductLend.PPName == PPName).Select(s => new
+                    {
+                        s.StockID,
+                        s.PPID,
+                        s.StockInDate,
+                        s.StockState,
+                        s.StockUser,
+                        s.StockDate,
+                        s.Users.UsersName,
+                        s.ProductLend.PPName,
+                        s.ProductLend.PPCompany
+                    })
+                    .OrderByDescending(s => s.StockDate).Skip(offset).Take(limit).ToListAsync()
+                });
+            }
+        }
+        //查询状态分页查询
+        public async Task<IHttpActionResult> Get_Stocks_SelectWhereStockStatePage_Async(int limit, int offset, string order, int StockState, string PPID, string SIDID)
+        {
+            using (PSSEntities db = new PSSEntities())
+            {
+                return Ok(new
+                {
+                    total = await db.Stocks.Where(s => s.StockState == StockState && (SIDID == "" ? s.StockInDepot.FirstOrDefault() == null : (s.StockInDepot.FirstOrDefault() == null || s.StockInDepot.FirstOrDefault().SIDID == SIDID))).Where(s => s.PPID == PPID).CountAsync(),
+                    rows = await db.Stocks.Where(s => s.StockState == StockState && (SIDID == "" ? s.StockInDepot.FirstOrDefault() == null : (s.StockInDepot.FirstOrDefault() == null || s.StockInDepot.FirstOrDefault().SIDID == SIDID))).Where(s => s.PPID == PPID).Select(s => new
                     {
                         s.StockID,
                         s.PPID,

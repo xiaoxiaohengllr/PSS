@@ -628,6 +628,10 @@
     <Content Include="Views\Shared\CustomersList.cshtml" />
     <Content Include="Views\Shared\ProductLendList.cshtml" />
     <Content Include="Views\Shared\ProductsList.cshtml" />
+    <Content Include="Views\Buy\StockInDepot.cshtml" />
+    <Content Include="Views\Buy\StockInDepotEdit.cshtml" />
+    <Content Include="Views\Shared\DepotsList.cshtml" />
+    <Content Include="Views\Shared\List.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
