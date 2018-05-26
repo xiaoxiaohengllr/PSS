@@ -124,6 +124,8 @@
     <Compile Include="Controllers\StockDetailController.cs" />
     <Compile Include="Controllers\StockInDepotController.cs" />
     <Compile Include="Controllers\StockInDepotDetailController.cs" />
+    <Compile Include="Controllers\StockReturnController.cs" />
+    <Compile Include="Controllers\StockReturnDetailController.cs" />
     <Compile Include="Controllers\StocksController.cs" />
     <Compile Include="Controllers\UsersController.cs" />
     <Compile Include="Controllers\UsersLoginController.cs" />
@@ -302,6 +304,12 @@
       <DependentUpon>PSS.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\StockOutDepotDetail.cs">
+      <DependentUpon>PSS.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\StockReturn.cs">
+      <DependentUpon>PSS.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\StockReturnDetail.cs">
       <DependentUpon>PSS.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Stocks.cs">

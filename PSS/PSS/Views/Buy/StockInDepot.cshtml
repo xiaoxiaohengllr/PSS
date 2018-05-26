@@ -20,6 +20,7 @@
         <div class="panel-body">
             <div id="btns" class="btn-group">
                 <button class="btn btn-success" id="AuditStockInDepot"><i class="glyphicon glyphicon-user"></i>审核</button>
+                <button class="btn btn-warning" id="ShowStockInDepot"><i class="glyphicon glyphicon-search"></i>查看</button>
                 <button class="btn btn-primary" id="AddStockInDepot"><i class="glyphicon glyphicon-save"></i>新增</button>
                 <button class="btn btn-info" id="EditStockInDepot"><i class="glyphicon glyphicon-edit"></i>修改</button>
                 <button class="btn btn-danger" id="DeleteStockInDepot"><i class="glyphicon glyphicon-remove"></i>删除</button>
@@ -130,9 +131,10 @@
                         $(body).find("#StockInDepotForm").find("#SIDDate").val($(body).find("#StockInDepotForm").find("#SIDDate").val().substring(0, 10));
                         $.getJSON("http://localhost:43727/api/StockInDepotDetail?SIDID=" + row[0].SIDID, function (rs) {
                             $.each(rs, function (i, obj) {
-                                console.log(obj);
                                 $(body).find("#stockInDepotDetailTable>tbody").append('<tr><td><input class="form-control" name="ProID" value="' + obj.ProID + '" type="text" readonly placeholder="双击选择商品" /></td><td><input class="form-control" name="ProName" value="' + obj.ProName + '" readonly type="text" /></td><td><input class="form-control" name="PTName" value="' + obj.PTName + '" readonly type="text" /></td><td><input class="form-control" name="PUName" value="' + obj.PUName + '" readonly type="text" /></td><td><input class="form-control" name="PSName" value="' + obj.PSName + '" readonly type="text" /></td><td><input class="form-control" name="PCName" value="' + obj.PCName + '" readonly type="text" /></td><td><input class="form-control" name="SIDDPrice" value="' + obj.SIDDPrice + '" readonly placeholder="请输入商品价格" type="text" /></td><td><input class="form-control" name="SIDDAmount" type="text" value="' + obj.SIDDAmount + '" readonly placeholder="请输入商品数量" /></td><td><button class="btn btn-danger" id="RemoveRow" ><i class="glyphicon glyphicon-remove"></i></button></td></tr>');
                             });
+                            $(body).find("#stockInDepotDetailTable>tbody").find('[name="SIDDAmount"]:first-child').focus();
+                            $(body).find("#stockInDepotDetailTable>tbody").find('[name="SIDDAmount"]:first-child').blur();
                         });
                     })
                 },
@@ -211,6 +213,36 @@
                     }
                 });
             }, function () {
+            });
+        });
+        $("#ShowStockInDepot").click(function () {
+            var row = $("#stockInDepotTable").bootstrapTable("getSelections");
+            if (row.length != 1) {
+                layer.msg("请选择一条要查看的采购入库订单！");
+                return;
+            }
+            layer.open({
+                type: 2,
+                area: ['1200px', '600px'],
+                scrollbar: false,
+                title: ['查看采购入库订单', 'font-weight:700'],
+                content: ['/Buy/StockInDepotEdit.html', 'auto'],
+                success: function (layero, index) {
+                    var body = layer.getChildFrame("body", index);
+                    $.getJSON("http://localhost:43727/api/StockInDepot/" + row[0].SIDID, function (data) {
+                        setForm($(body).find("#StockInDepotForm"), data);
+                        $(body).find("#StockInDepotForm").find("#SIDDate").val($(body).find("#StockInDepotForm").find("#SIDDate").val().substring(0, 10));
+                        $.getJSON("http://localhost:43727/api/StockInDepotDetail?SIDID=" + row[0].SIDID, function (rs) {
+                            $.each(rs, function (i, obj) {
+                                $(body).find("#stockInDepotDetailTable>tbody").append('<tr><td><input class="form-control" name="ProID" value="' + obj.ProID + '" type="text" readonly placeholder="双击选择商品" /></td><td><input class="form-control" name="ProName" value="' + obj.ProName + '" readonly type="text" /></td><td><input class="form-control" name="PTName" value="' + obj.PTName + '" readonly type="text" /></td><td><input class="form-control" name="PUName" value="' + obj.PUName + '" readonly type="text" /></td><td><input class="form-control" name="PSName" value="' + obj.PSName + '" readonly type="text" /></td><td><input class="form-control" name="PCName" value="' + obj.PCName + '" readonly type="text" /></td><td><input class="form-control" name="SIDDPrice" value="' + obj.SIDDPrice + '" readonly placeholder="请输入商品价格" type="text" /></td><td><input class="form-control" name="SIDDAmount" type="text" value="' + obj.SIDDAmount + '" readonly placeholder="请输入商品数量" /></td></tr>');
+                            });
+                            $(body).find("#stockInDepotDetailTable>tbody").find('[name="SIDDAmount"]:first-child').focus();
+                            $(body).find("#stockInDepotDetailTable>tbody").find('[name="SIDDAmount"]:first-child').blur();
+                        });
+                    });
+                    $(body).find("#AddRow").parents("th").remove();
+                    $(body).find("#save").remove();
+                }
             });
         });
     </script>

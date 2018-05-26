@@ -83,6 +83,8 @@ namespace PSS_WebApi.Models
         public virtual DbSet<Stocks> Stocks { get; set; }
         public virtual DbSet<Users> Users { get; set; }
         public virtual DbSet<UsersRole> UsersRole { get; set; }
+        public virtual DbSet<StockReturn> StockReturn { get; set; }
+        public virtual DbSet<StockReturnDetail> StockReturnDetail { get; set; }
     
         public virtual int proc_CFNO(ObjectParameter no)
         {

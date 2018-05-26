@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-      <Schema Namespace="PSSModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2008" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+    <Schema Namespace="PSSModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2008" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="Bank">
           <Key>
             <PropertyRef Name="BankID" />
@@ -631,6 +631,29 @@
           <Property Name="SIDDPrice" Type="numeric" Precision="10" Scale="2" Nullable="false" />
           <Property Name="SIDDDesc" Type="nvarchar" MaxLength="1000" Nullable="false" />
         </EntityType>
+        <EntityType Name="StockReturn">
+          <Key>
+            <PropertyRef Name="SRID" />
+          </Key>
+          <Property Name="SRID" Type="char" MaxLength="14" Nullable="false" />
+          <Property Name="SIDID" Type="char" MaxLength="14" />
+          <Property Name="SRDate" Type="datetime" />
+          <Property Name="SRCreateTime" Type="datetime" />
+          <Property Name="SRUser" Type="int" />
+          <Property Name="SRState" Type="int" />
+          <Property Name="SRDesc" Type="nvarchar" MaxLength="1000" />
+        </EntityType>
+        <EntityType Name="StockReturnDetail">
+          <Key>
+            <PropertyRef Name="SRDID" />
+          </Key>
+          <Property Name="SRDID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ProID" Type="int" />
+          <Property Name="SRID" Type="char" MaxLength="14" />
+          <Property Name="SRDAmount" Type="int" />
+          <Property Name="SRDPrice" Type="numeric" Precision="10" Scale="2" />
+          <Property Name="SRDDesc" Type="nvarchar" MaxLength="1000" />
+        </EntityType>
         <EntityType Name="Stocks">
           <Key>
             <PropertyRef Name="StockID" />
@@ -876,6 +899,54 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_StockReturn_StockReturn">
+          <End Role="StockInDepot" Type="Self.StockInDepot" Multiplicity="0..1" />
+          <End Role="StockReturn" Type="Self.StockReturn" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="StockInDepot">
+              <PropertyRef Name="SIDID" />
+            </Principal>
+            <Dependent Role="StockReturn">
+              <PropertyRef Name="SIDID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_StockReturn_Users">
+          <End Role="Users" Type="Self.Users" Multiplicity="0..1" />
+          <End Role="StockReturn" Type="Self.StockReturn" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="UsersID" />
+            </Principal>
+            <Dependent Role="StockReturn">
+              <PropertyRef Name="SRUser" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_StockReturnDetail_Products">
+          <End Role="Products" Type="Self.Products" Multiplicity="0..1" />
+          <End Role="StockReturnDetail" Type="Self.StockReturnDetail" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Products">
+              <PropertyRef Name="ProID" />
+            </Principal>
+            <Dependent Role="StockReturnDetail">
+              <PropertyRef Name="ProID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_StockReturnDetail_StockReturn">
+          <End Role="StockReturn" Type="Self.StockReturn" Multiplicity="0..1" />
+          <End Role="StockReturnDetail" Type="Self.StockReturnDetail" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="StockReturn">
+              <PropertyRef Name="SRID" />
+            </Principal>
+            <Dependent Role="StockReturnDetail">
+              <PropertyRef Name="SRID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_Stocks_ProductLend">
           <End Role="ProductLend" Type="Self.ProductLend" Multiplicity="0..1" />
           <End Role="Stocks" Type="Self.Stocks" Multiplicity="*" />
@@ -1023,6 +1094,8 @@
           <EntitySet Name="StockInDepotDetail" EntityType="Self.StockInDepotDetail" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="StockOutDepot" EntityType="Self.StockOutDepot" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="StockOutDepotDetail" EntityType="Self.StockOutDepotDetail" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="StockReturn" EntityType="Self.StockReturn" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="StockReturnDetail" EntityType="Self.StockReturnDetail" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Stocks" EntityType="Self.Stocks" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Users" EntityType="Self.Users" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="UsersRole" EntityType="Self.UsersRole" Schema="dbo" store:Type="Tables" />
@@ -1098,6 +1171,22 @@
             <End Role="Products" EntitySet="Products" />
             <End Role="StockInDepotDetail" EntitySet="StockInDepotDetail" />
           </AssociationSet>
+          <AssociationSet Name="FK_StockReturn_StockReturn" Association="Self.FK_StockReturn_StockReturn">
+            <End Role="StockInDepot" EntitySet="StockInDepot" />
+            <End Role="StockReturn" EntitySet="StockReturn" />
+          </AssociationSet>
+          <AssociationSet Name="FK_StockReturn_Users" Association="Self.FK_StockReturn_Users">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="StockReturn" EntitySet="StockReturn" />
+          </AssociationSet>
+          <AssociationSet Name="FK_StockReturnDetail_Products" Association="Self.FK_StockReturnDetail_Products">
+            <End Role="Products" EntitySet="Products" />
+            <End Role="StockReturnDetail" EntitySet="StockReturnDetail" />
+          </AssociationSet>
+          <AssociationSet Name="FK_StockReturnDetail_StockReturn" Association="Self.FK_StockReturnDetail_StockReturn">
+            <End Role="StockReturn" EntitySet="StockReturn" />
+            <End Role="StockReturnDetail" EntitySet="StockReturnDetail" />
+          </AssociationSet>
           <AssociationSet Name="FK_Stocks_ProductLend" Association="Self.FK_Stocks_ProductLend">
             <End Role="ProductLend" EntitySet="ProductLend" />
             <End Role="Stocks" EntitySet="Stocks" />
@@ -1107,8 +1196,7 @@
             <End Role="Stocks" EntitySet="Stocks" />
           </AssociationSet>
         </EntityContainer>
-      </Schema>
-    </edmx:StorageModels>
+      </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="PSSModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
@@ -1567,6 +1655,7 @@
           <NavigationProperty Name="ProductUnit" Relationship="Self.FK_Products_ProductUnit" FromRole="Products" ToRole="ProductUnit" />
           <NavigationProperty Name="StockDetail" Relationship="Self.FK_StockDetail_Products" FromRole="Products" ToRole="StockDetail" />
           <NavigationProperty Name="StockInDepotDetail" Relationship="Self.FK_StockInDepotDetail_StockInDepotDetail" FromRole="Products" ToRole="StockInDepotDetail" />
+          <NavigationProperty Name="StockReturnDetail" Relationship="PSSModel.FK_StockReturnDetail_Products" FromRole="Products" ToRole="StockReturnDetail" />
         </EntityType>
         <EntityType Name="ProductSpec">
           <Key>
@@ -1733,6 +1822,7 @@
           <NavigationProperty Name="Stocks" Relationship="Self.FK_StockInDepot_Stocks" FromRole="StockInDepot" ToRole="Stocks" />
           <NavigationProperty Name="Users" Relationship="Self.FK_StockInDepot_Users" FromRole="StockInDepot" ToRole="Users" />
           <NavigationProperty Name="StockInDepotDetail" Relationship="Self.FK_StockInDepotDetail_StockInDepot" FromRole="StockInDepot" ToRole="StockInDepotDetail" />
+          <NavigationProperty Name="StockReturn" Relationship="PSSModel.FK_StockReturn_StockReturn" FromRole="StockInDepot" ToRole="StockReturn" />
         </EntityType>
         <EntityType Name="StockInDepotDetail">
           <Key>
@@ -1798,6 +1888,7 @@
           <NavigationProperty Name="QuotePrice" Relationship="Self.FK_QuotePrice_Users" FromRole="Users" ToRole="QuotePrice" />
           <NavigationProperty Name="StockInDepot" Relationship="Self.FK_StockInDepot_Users" FromRole="Users" ToRole="StockInDepot" />
           <NavigationProperty Name="Stocks" Relationship="Self.FK_Stocks_Users" FromRole="Users" ToRole="Stocks" />
+          <NavigationProperty Name="StockReturn" Relationship="PSSModel.FK_StockReturn_Users" FromRole="Users" ToRole="StockReturn" />
         </EntityType>
         <EntityType Name="UsersRole">
           <Key>
@@ -2185,7 +2276,7 @@
             <End Role="Stocks" EntitySet="Stocks" />
           </AssociationSet>
           <FunctionImport Name="proc_CFNO">
-            <Parameter Name="no" Mode="InOut" Type="String" />
+          <Parameter Name="no" Mode="InOut" Type="String" />
           </FunctionImport>
           <FunctionImport Name="proc_common_create_flowNo">
             <Parameter Name="tableName" Mode="In" Type="String" />
@@ -2194,52 +2285,52 @@
             <Parameter Name="no" Mode="InOut" Type="String" />
           </FunctionImport>
           <FunctionImport Name="proc_CPNO">
-            <Parameter Name="no" Mode="InOut" Type="String" />
+          <Parameter Name="no" Mode="InOut" Type="String" />
           </FunctionImport>
           <FunctionImport Name="proc_CusOrder">
-            <Parameter Name="no" Mode="InOut" Type="String" />
+          <Parameter Name="no" Mode="InOut" Type="String" />
           </FunctionImport>
           <FunctionImport Name="proc_Cust_no">
-            <Parameter Name="no" Mode="InOut" Type="String" />
+          <Parameter Name="no" Mode="InOut" Type="String" />
           </FunctionImport>
           <FunctionImport Name="proc_Customers">
-            <Parameter Name="no" Mode="InOut" Type="String" />
+          <Parameter Name="no" Mode="InOut" Type="String" />
           </FunctionImport>
           <FunctionImport Name="proc_Depots">
-            <Parameter Name="No" Mode="InOut" Type="String" />
+          <Parameter Name="No" Mode="InOut" Type="String" />
           </FunctionImport>
           <FunctionImport Name="proc_Losts">
-            <Parameter Name="no" Mode="InOut" Type="String" />
+          <Parameter Name="no" Mode="InOut" Type="String" />
           </FunctionImport>
           <FunctionImport Name="proc_PayOffs">
-            <Parameter Name="no" Mode="InOut" Type="String" />
+          <Parameter Name="no" Mode="InOut" Type="String" />
           </FunctionImport>
           <FunctionImport Name="proc_ProductLend">
-            <Parameter Name="no" Mode="InOut" Type="String" />
+          <Parameter Name="no" Mode="InOut" Type="String" />
           </FunctionImport>
           <FunctionImport Name="proc_ProID">
-            <Parameter Name="no" Mode="InOut" Type="String" />
+          <Parameter Name="no" Mode="InOut" Type="String" />
           </FunctionImport>
           <FunctionImport Name="proc_SaleReturn">
-            <Parameter Name="no" Mode="InOut" Type="String" />
+          <Parameter Name="no" Mode="InOut" Type="String" />
           </FunctionImport>
           <FunctionImport Name="proc_SCNO">
-            <Parameter Name="no" Mode="InOut" Type="String" />
+          <Parameter Name="no" Mode="InOut" Type="String" />
           </FunctionImport>
           <FunctionImport Name="proc_SDNO">
-            <Parameter Name="no" Mode="InOut" Type="String" />
+          <Parameter Name="no" Mode="InOut" Type="String" />
           </FunctionImport>
           <FunctionImport Name="proc_SLNO">
-            <Parameter Name="no" Mode="InOut" Type="String" />
+          <Parameter Name="no" Mode="InOut" Type="String" />
           </FunctionImport>
           <FunctionImport Name="proc_StID">
-            <Parameter Name="no" Mode="InOut" Type="String" />
+          <Parameter Name="no" Mode="InOut" Type="String" />
           </FunctionImport>
           <FunctionImport Name="proc_StockInDepot">
-            <Parameter Name="no" Mode="InOut" Type="String" />
+          <Parameter Name="no" Mode="InOut" Type="String" />
           </FunctionImport>
           <FunctionImport Name="proc_StockOutDepot">
-            <Parameter Name="no" Mode="InOut" Type="String" />
+          <Parameter Name="no" Mode="InOut" Type="String" />
           </FunctionImport>
           <FunctionImport Name="PS_proc_CommonPager">
             <Parameter Name="tblName" Mode="In" Type="String" />
@@ -2250,7 +2341,101 @@
             <Parameter Name="OrderType" Mode="In" Type="Boolean" />
             <Parameter Name="strWhere" Mode="In" Type="String" />
           </FunctionImport>
+          <EntitySet Name="StockReturn" EntityType="PSSModel.StockReturn" />
+          <EntitySet Name="StockReturnDetail" EntityType="PSSModel.StockReturnDetail" />
+          <AssociationSet Name="FK_StockReturnDetail_Products" Association="PSSModel.FK_StockReturnDetail_Products">
+            <End Role="Products" EntitySet="Products" />
+            <End Role="StockReturnDetail" EntitySet="StockReturnDetail" />
+          </AssociationSet>
+          <AssociationSet Name="FK_StockReturn_StockReturn" Association="PSSModel.FK_StockReturn_StockReturn">
+            <End Role="StockInDepot" EntitySet="StockInDepot" />
+            <End Role="StockReturn" EntitySet="StockReturn" />
+          </AssociationSet>
+          <AssociationSet Name="FK_StockReturn_Users" Association="PSSModel.FK_StockReturn_Users">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="StockReturn" EntitySet="StockReturn" />
+          </AssociationSet>
+          <AssociationSet Name="FK_StockReturnDetail_StockReturn" Association="PSSModel.FK_StockReturnDetail_StockReturn">
+            <End Role="StockReturn" EntitySet="StockReturn" />
+            <End Role="StockReturnDetail" EntitySet="StockReturnDetail" />
+          </AssociationSet>
         </EntityContainer>
+        <EntityType Name="StockReturn">
+          <Key>
+            <PropertyRef Name="SRID" />
+          </Key>
+          <Property Name="SRID" Type="String" Nullable="false" MaxLength="14" FixedLength="true" Unicode="false" />
+          <Property Name="SIDID" Type="String" MaxLength="14" FixedLength="true" Unicode="false" />
+          <Property Name="SRDate" Type="DateTime" Precision="3" />
+          <Property Name="SRCreateTime" Type="DateTime" Precision="3" />
+          <Property Name="SRUser" Type="Int32" />
+          <Property Name="SRState" Type="Int32" />
+          <Property Name="SRDesc" Type="String" MaxLength="1000" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="StockInDepot" Relationship="PSSModel.FK_StockReturn_StockReturn" FromRole="StockReturn" ToRole="StockInDepot" />
+          <NavigationProperty Name="Users" Relationship="PSSModel.FK_StockReturn_Users" FromRole="StockReturn" ToRole="Users" />
+          <NavigationProperty Name="StockReturnDetail" Relationship="PSSModel.FK_StockReturnDetail_StockReturn" FromRole="StockReturn" ToRole="StockReturnDetail" />
+        </EntityType>
+        <EntityType Name="StockReturnDetail">
+          <Key>
+            <PropertyRef Name="SRDID" />
+          </Key>
+          <Property Name="SRDID" Type="Int32" Nullable="false" />
+          <Property Name="ProID" Type="Int32" />
+          <Property Name="SRID" Type="String" MaxLength="14" FixedLength="true" Unicode="false" />
+          <Property Name="SRDAmount" Type="Int32" />
+          <Property Name="SRDPrice" Type="Decimal" Precision="10" Scale="2" />
+          <Property Name="SRDDesc" Type="String" MaxLength="1000" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Products" Relationship="PSSModel.FK_StockReturnDetail_Products" FromRole="StockReturnDetail" ToRole="Products" />
+          <NavigationProperty Name="StockReturn" Relationship="PSSModel.FK_StockReturnDetail_StockReturn" FromRole="StockReturnDetail" ToRole="StockReturn" />
+        </EntityType>
+        <Association Name="FK_StockReturnDetail_Products">
+          <End Type="PSSModel.Products" Role="Products" Multiplicity="0..1" />
+          <End Type="PSSModel.StockReturnDetail" Role="StockReturnDetail" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Products">
+              <PropertyRef Name="ProID" />
+            </Principal>
+            <Dependent Role="StockReturnDetail">
+              <PropertyRef Name="ProID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_StockReturn_StockReturn">
+          <End Type="PSSModel.StockInDepot" Role="StockInDepot" Multiplicity="0..1" />
+          <End Type="PSSModel.StockReturn" Role="StockReturn" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="StockInDepot">
+              <PropertyRef Name="SIDID" />
+            </Principal>
+            <Dependent Role="StockReturn">
+              <PropertyRef Name="SIDID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_StockReturn_Users">
+          <End Type="PSSModel.Users" Role="Users" Multiplicity="0..1" />
+          <End Type="PSSModel.StockReturn" Role="StockReturn" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="UsersID" />
+            </Principal>
+            <Dependent Role="StockReturn">
+              <PropertyRef Name="SRUser" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_StockReturnDetail_StockReturn">
+          <End Type="PSSModel.StockReturn" Role="StockReturn" Multiplicity="0..1" />
+          <End Type="PSSModel.StockReturnDetail" Role="StockReturnDetail" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="StockReturn">
+              <PropertyRef Name="SRID" />
+            </Principal>
+            <Dependent Role="StockReturnDetail">
+              <PropertyRef Name="SRID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -2987,6 +3172,31 @@
           <FunctionImportMapping FunctionImportName="proc_StockInDepot" FunctionName="PSSModel.Store.proc_StockInDepot" />
           <FunctionImportMapping FunctionImportName="proc_StockOutDepot" FunctionName="PSSModel.Store.proc_StockOutDepot" />
           <FunctionImportMapping FunctionImportName="PS_proc_CommonPager" FunctionName="PSSModel.Store.PS_proc_CommonPager" />
+          <EntitySetMapping Name="StockReturn">
+            <EntityTypeMapping TypeName="PSSModel.StockReturn">
+              <MappingFragment StoreEntitySet="StockReturn">
+                <ScalarProperty Name="SRDesc" ColumnName="SRDesc" />
+                <ScalarProperty Name="SRState" ColumnName="SRState" />
+                <ScalarProperty Name="SRUser" ColumnName="SRUser" />
+                <ScalarProperty Name="SRCreateTime" ColumnName="SRCreateTime" />
+                <ScalarProperty Name="SRDate" ColumnName="SRDate" />
+                <ScalarProperty Name="SIDID" ColumnName="SIDID" />
+                <ScalarProperty Name="SRID" ColumnName="SRID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="StockReturnDetail">
+            <EntityTypeMapping TypeName="PSSModel.StockReturnDetail">
+              <MappingFragment StoreEntitySet="StockReturnDetail">
+                <ScalarProperty Name="SRDDesc" ColumnName="SRDDesc" />
+                <ScalarProperty Name="SRDPrice" ColumnName="SRDPrice" />
+                <ScalarProperty Name="SRDAmount" ColumnName="SRDAmount" />
+                <ScalarProperty Name="SRID" ColumnName="SRID" />
+                <ScalarProperty Name="ProID" ColumnName="ProID" />
+                <ScalarProperty Name="SRDID" ColumnName="SRDID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

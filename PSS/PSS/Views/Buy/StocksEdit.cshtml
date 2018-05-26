@@ -90,6 +90,8 @@
                         $(body).on("dblclick", "table>tbody>tr", function () {
                             $("#PPID").val($(this).find("td:first-child").text());
                             layer.close(index);
+                            $("#stockInDepotDetailTable>tbody").empty();
+                            sum();
                         });
                     }
                 });

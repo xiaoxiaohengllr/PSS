@@ -122,6 +122,9 @@
                         $(body).on("dblclick", "table>tbody>tr", function () {
                             $("#PPID").val($(this).find("td:first-child").text());
                             layer.close(index);
+                            $("#stockInDepotDetailTable>tbody").empty();
+                            $("#StockID").val("");
+                            sum();
                         });
                     }
                 });
@@ -198,8 +201,9 @@
                         //双击选择采购订单
                         $(body).on("dblclick", "table>tbody>tr", function () {
                             $("#StockID").val($(this).find("td:first-child").text() == "没有找到匹配的记录" ? "" : $(this).find("td:first-child").text());
-                            $("#stockInDepotDetailTable>tbody").empty();
                             layer.close(index);
+                            $("#stockInDepotDetailTable>tbody").empty();
+                            sum();
                         });
                     }
                 });
@@ -326,6 +330,9 @@
                 } else {
                     layer.msg("请填写完整采购入库单详单！");
                 }
+            });
+            $("#stockInDepotDetailTable>tbody").on("blur", '[name="SIDDAmount"]', function () {
+                sum();
             });
         })
         function sum() {

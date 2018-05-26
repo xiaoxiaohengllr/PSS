@@ -31,9 +31,19 @@ namespace PSS.Controllers
             return View();
         }
         //添加修改入库订单
-        public ActionResult StockInDepotEdit() {
+        public ActionResult StockInDepotEdit()
+        {
             return View();
         }
-
+        //退货订单
+        public ActionResult StockReturn()
+        {
+            return View();
+        }
+        //添加修改退货订单
+        public ActionResult StockReturnEdit()
+        {
+            return View();
+        }
     }
 }

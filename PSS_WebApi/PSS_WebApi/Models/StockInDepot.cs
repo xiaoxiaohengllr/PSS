@@ -18,6 +18,7 @@ namespace PSS_WebApi.Models
         public StockInDepot()
         {
             this.StockInDepotDetail = new HashSet<StockInDepotDetail>();
+            this.StockReturn = new HashSet<StockReturn>();
         }
     
         public string SIDID { get; set; }
@@ -37,5 +38,7 @@ namespace PSS_WebApi.Models
         public virtual Users Users { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<StockInDepotDetail> StockInDepotDetail { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<StockReturn> StockReturn { get; set; }
     }
 }

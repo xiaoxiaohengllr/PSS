@@ -1,0 +1,255 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title></title>
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/bootstrap-table-develop/dist/bootstrap-table.css" rel="stylesheet" />
+    <link href="~/Content/bootstrap-select.min.css" rel="stylesheet" />
+    <link href="~/layui/css/layui.css" rel="stylesheet" />
+</head>
+<body>
+    <div class="panel panel-default">
+        <div class="panel-heading">采购退货订单</div>
+        <div class="panel-body">
+            <div id="btns" class="btn-group">
+                <button class="btn btn-success" id="AuditStockReturn"><i class="glyphicon glyphicon-user"></i>审核</button>
+                <button class="btn btn-warning" id="ShowStockReturn"><i class="glyphicon glyphicon-search"></i>查看</button>
+                <button class="btn btn-primary" id="AddStockReturn"><i class="glyphicon glyphicon-save"></i>新增</button>
+                <button class="btn btn-info" id="EditStockReturn"><i class="glyphicon glyphicon-edit"></i>修改</button>
+                <button class="btn btn-danger" id="DeleteStockReturn"><i class="glyphicon glyphicon-remove"></i>删除</button>
+                <form class="form-inline" style="float:left; margin-left:10px;">
+                    <div class="form-group">
+                        <label for="SIDID">采购入库单号:</label>
+                        <input type="text" name="SIDID" class="form-control" id="SIDID" placeholder="请输入采购入库单号">
+                    </div>
+                    <button type="button" id="search" class="btn btn-default">查询</button>
+                </form>
+            </div>
+            <table id="stockReturnTable" class="table table-bordered table-striped table-hover"></table>
+        </div>
+    </div>
+    <script src="~/Scripts/jquery-3.2.1.min.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    <script src="~/bootstrap-table-develop/dist/bootstrap-table.js"></script>
+    <script src="~/bootstrap-table-develop/dist/locale/bootstrap-table-zh-CN.min.js"></script>
+    <script src="~/bootstrap-table-develop/dist/extensions/export/bootstrap-table-export.min.js"></script>
+    <script src="~/bootstrap-table-develop/dist/extensions/export/tableExport.js"></script>
+    <script src="~/Scripts/bootstrap-select.min.js"></script>
+    <script src="~/layui/layui.all.js"></script>
+    <script src="~/Scripts/ajaxHelp.js"></script>
+    <script>
+
+        $(function () {
+            //添加搜索
+            $("#search").click(function () {
+                var SIDID = $("#SIDID").val();
+                $.getJSON("http://localhost:43727/api/StockReturn?order=asc&offset=0&limit=10&SIDID=" + SIDID, function (data) {
+                    $("#stockReturnTable").bootstrapTable("load", data);
+                });
+            });
+            //绑定数据表格
+            $("#stockReturnTable").bootstrapTable({
+                method: "get",
+                url: "http://localhost:43727/api/StockReturn",
+                undefinedText: "",//当数据为 undefined 时显示的空字符
+                pagination: true, //表格底部显示分页条
+                paginationLoop: false,//禁用分页条无限循环的功能
+                toolbar: "#btns",
+                sidePagination: "server",
+                showExport: true,
+                pageNumber: 1,
+                pageSize: 10,
+                pageList: [5, 10, 20, "All"],
+                paginationPreText: "上一页",
+                paginationNextText: "下一页",
+                showColumns: true,
+                showRefresh: true,
+                clickToSelect: true,
+                queryParams: function (params) {
+                    params.SIDID = "";
+                    return params;
+                },
+                columns: [
+                    { checkbox: true },
+                    { field: "SRID", title: "采购退货单编号" },
+                    { field: "SIDID", title: "采购入库单号" },
+                    {
+                        field: "SRDate", title: "退货时间", formatter: function (value, row, index) {
+                            return value.substring(0, 10)
+                        }
+                    },
+                    {
+                        field: "SRCreateTime", title: "提交时间", formatter: function (value, row, index) {
+                            return value.substring(0, 10)
+                        }
+                    },
+                    { field: "UsersName", title: "创建人" },
+                    {
+                        field: "SRState", title: "审核状态 ", formatter: function (value, row, index) {
+                            return value == 2 ? "已审" : "未审";
+                        }
+                    }
+                ]
+            });
+            //添加
+            $("#AddStockReturn").click(function () {
+                layer.open({
+                    type: 2,
+                    area: ['1200px', '600px'],
+                    scrollbar: false,
+                    title: ['新增采购退货订单', 'font-weight:700'],
+                    content: ['/Buy/StockReturnEdit.html', 'auto'],
+                    success: function (layero, index) {
+                        var body = layer.getChildFrame("body", index);
+                    },
+                    end: function () {
+                        //销毁时刷新
+                        $('#stockReturnTable').bootstrapTable("refresh");
+                    }
+                });
+            });
+            //修改
+            $("#EditStockReturn").click(function () {
+                var row = $("#stockReturnTable").bootstrapTable("getSelections");
+                if (row.length != 1) {
+                    layer.msg("请选择一条要修改的采购退货订单！");
+                    return;
+                }
+                if (row[0].SRState == 2) {
+                    layer.msg("采购订单已审核，不能修改！");
+                    return;
+                }
+                layer.open({
+                    type: 2,
+                    area: ['1200px', '600px'],
+                    scrollbar: false,
+                    title: ['修改采购退货订单', 'font-weight:700'],
+                    content: ['/Buy/StockReturnEdit.html', 'auto'],
+                    success: function (layero, index) {
+                        var body = layer.getChildFrame("body", index);
+                        $.getJSON("http://localhost:43727/api/StockReturn/" + row[0].SRID, function (data) {
+                            setForm($(body).find("#StockReturnForm"), data);
+                            $(body).find("#StockReturnForm").find("#SRDate").val($(body).find("#StockReturnForm").find("#SRDate").val().substring(0, 10));
+                            $(body).find("#StockReturnForm").find("#SRCreateTime").val($(body).find("#StockReturnForm").find("#SRCreateTime").val().substring(0, 10));
+                            $.getJSON("http://localhost:43727/api/StockReturnDetail?SRID=" + row[0].SRID, function (rs) {
+                                $.each(rs, function (i,obj) {
+                                    $(body).find("#Table>tbody").append('<tr><td><input class="form-control" name="ProID" value="' + obj.ProID + '" type="text" readonly placeholder="双击选择商品" /></td><td><input class="form-control" name="ProName" value="' + obj.ProName + '" readonly type="text" /></td><td><input class="form-control" name="PTName" value="' + obj.PTName + '" readonly type="text" /></td><td><input class="form-control" name="PUName" value="' + obj.PUName + '" readonly type="text" /></td><td><input class="form-control" name="PSName" value="' + obj.PSName + '" readonly type="text" /></td><td><input class="form-control" name="PCName" value="' + obj.PCName + '" readonly type="text" /></td><td><input class="form-control" name="SRDPrice" value="' + obj.SRDPrice + '" readonly placeholder="请输入商品价格" type="text" /></td><td><input class="form-control" name="SRDAmount" type="text" value="' + obj.SRDAmount + '" placeholder="请输入商品数量" /></td><td><button class="btn btn-danger" id="RemoveRow" ><i class="glyphicon glyphicon-remove"></i></button></td></tr>');
+                                })
+                                $(body).find("#Table>tbody").find('[name="SRDAmount"]:first-child').focus();
+                                $(body).find("#Table>tbody").find('[name="SRDAmount"]:first-child').blur();
+                            });
+                        });
+                    },
+                    end: function () {
+                        //销毁时刷新
+                        $('#stockReturnTable').bootstrapTable("refresh");
+                    }
+                });
+            });
+            //删除
+            $("#DeleteStockReturn").click(function () {
+                var row = $("#stockReturnTable").bootstrapTable("getSelections");
+                if (row.length != 1) {
+                    layer.msg("请选择一条要删除的采购退货订单！");
+                    return;
+                }
+                if (row[0].SRState == 2) {
+                    layer.msg("采购退货订单已审核，不能删除！");
+                    return;
+                }
+                layer.confirm('您确定要删除此采购退货订单吗？', {
+                    btn: ['确定', '取消'], //按钮
+                    icon: 2
+                }, function () {
+                    $.ajax({
+                        url: "http://localhost:43727/api/StockReturn/" + row[0].SRID,
+                        type: "delete",
+                        success: function (data) {
+                            if (data) {
+                                layer.msg("删除成功！");
+                                $('#stockReturnTable').bootstrapTable("refresh");
+                            } else {
+                                layer.msg("删除失败！");
+                            }
+                        }
+                    });
+                }, function () {
+                });
+            });
+            //查看
+            $("#ShowStockReturn").click(function () {
+                var row = $("#stockReturnTable").bootstrapTable("getSelections");
+                if (row.length != 1) {
+                    layer.msg("请选择一条要查看的采购退货订单！");
+                    return;
+                }
+                layer.open({
+                    type: 2,
+                    area: ['1200px', '600px'],
+                    scrollbar: false,
+                    title: ['查看采购退货订单', 'font-weight:700'],
+                    content: ['/Buy/StockReturnEdit.html', 'auto'],
+                    success: function (layero, index) {
+                        var body = layer.getChildFrame("body", index);
+                        $.getJSON("http://localhost:43727/api/StockReturn/" + row[0].SRID, function (data) {
+                            setForm($(body).find("#StockReturnForm"), data);
+                            $(body).find("#StockReturnForm").find("#SRDate").val($(body).find("#StockReturnForm").find("#SRDate").val().substring(0, 10));
+                            $(body).find("#StockReturnForm").find("#SRCreateTime").val($(body).find("#StockReturnForm").find("#SRCreateTime").val().substring(0, 10));
+                            $.getJSON("http://localhost:43727/api/StockReturnDetail?SRID=" + row[0].SRID, function (rs) {
+                                $.each(rs, function (i, obj) {
+                                    $(body).find("#Table>tbody").append('<tr><td><input class="form-control" name="ProID" value="' + obj.ProID + '" type="text" readonly placeholder="双击选择商品" /></td><td><input class="form-control" name="ProName" value="' + obj.ProName + '" readonly type="text" /></td><td><input class="form-control" name="PTName" value="' + obj.PTName + '" readonly type="text" /></td><td><input class="form-control" name="PUName" value="' + obj.PUName + '" readonly type="text" /></td><td><input class="form-control" name="PSName" value="' + obj.PSName + '" readonly type="text" /></td><td><input class="form-control" name="PCName" value="' + obj.PCName + '" readonly type="text" /></td><td><input class="form-control" name="SRDPrice" value="' + obj.SRDPrice + '" readonly placeholder="请输入商品价格" type="text" /></td><td><input class="form-control" name="SRDAmount" type="text" value="' + obj.SRDAmount + '" readonly placeholder="请输入商品数量" /></td></tr>');
+                                })
+                                $(body).find("#Table>tbody").find('[name="SRDAmount"]:first-child').focus();
+                                $(body).find("#Table>tbody").find('[name="SRDAmount"]:first-child').blur();
+                            });
+                        });
+                        $(body).find("#AddRow").parents("th").remove();
+                        $(body).find("#save").remove();
+                    },
+                    end: function () {
+                        //销毁时刷新
+                        $('#stockReturnTable').bootstrapTable("refresh");
+                    }
+                });
+            });
+            //审核
+            $("#AuditStockReturn").click(function () {
+                var row = $("#stockReturnTable").bootstrapTable("getSelections");
+                if (row.length != 1) {
+                    layer.msg("请选择一条要审核的采购退货订单！");
+                    return;
+                }
+                if (row[0].StockState == 2) {
+                    layer.msg("采购退货订单已审核，不能审核！");
+                    return;
+                }
+                layer.confirm('您确定要审核此采购退货订单吗？', {
+                    btn: ['确定', '取消'], //按钮
+                    icon: 2
+                }, function () {
+                    $.ajax({
+                        url: "http://localhost:43727/api/StockReturn?SRState=2&SRID=" + row[0].SRID,
+                        type: "get",
+                        success: function (data) {
+                            if (data) {
+                                layer.msg("审核成功！");
+                                $('#stockReturnTable').bootstrapTable("refresh");
+                            } else {
+                                layer.msg("审核失败！");
+                            }
+                        }
+                    });
+                }, function () {
+                });
+            });
+        });
+    </script>
+</body>
+</html>

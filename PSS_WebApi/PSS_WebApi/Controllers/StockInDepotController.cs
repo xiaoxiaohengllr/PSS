@@ -42,6 +42,7 @@ namespace PSS_WebApi.Controllers
         //修改采购入库单状态
         public async Task<IHttpActionResult> Get_StockInDepot_EditStockInDepoState_Async(int SIDData, string SIDID)
         {
+            SIDData = 2;
             using (PSSEntities db = new PSSEntities())
             {
                 StockInDepot stockInDepot = db.StockInDepot.Find(SIDID);
@@ -62,14 +63,14 @@ namespace PSS_WebApi.Controllers
                     //生成入库祥单
                     InOutDepotDetail InOutDepotDetail = new InOutDepotDetail()
                     {
-                        IODID= Convert.ToInt32(InOutDepotId),
-                        ProID= item.ProID,
-                        IODDAmount=item.SIDDAmount,
-                        IODDPrice=item.SIDDPrice
+                        IODID = Convert.ToInt32(InOutDepotId),
+                        ProID = item.ProID,
+                        IODDAmount = item.SIDDAmount,
+                        IODDPrice = item.SIDDPrice
                     };
                     db.InOutDepotDetail.Add(InOutDepotDetail);
-                    DepotStock ds = await db.DepotStock.Where(d => d.DepotID == stockInDepot.DepotID && d.DSPrice == item.SIDDPrice && d.ProID == item.ProID).FirstOrDefaultAsync();
-                    if (ds==null)
+                    DepotStock ds = await db.DepotStock.Where(d => d.DepotID == stockInDepot.DepotID && d.ProID == item.ProID).FirstOrDefaultAsync();
+                    if (ds == null)
                     {
                         //添加到库存
                         DepotStock depotStock = new DepotStock()
@@ -83,6 +84,7 @@ namespace PSS_WebApi.Controllers
                     }
                     else
                     {
+                        ds.DSPrice = item.SIDDPrice > ds.DSPrice ? item.SIDDPrice : ds.DSPrice;
                         ds.DSAmount = ds.DSAmount + item.SIDDAmount;
                     }
                 }
@@ -91,7 +93,7 @@ namespace PSS_WebApi.Controllers
             }
         }
         //入库订单条件查询分页
-        public async Task<IHttpActionResult> Get_StockInDepot_SelectPage_Async(int limit, int offset, string order, string PPName)
+        public async Task<IHttpActionResult> Get_StockInDepot_SelectWherePPNamePage_Async(int limit, int offset, string order, string PPName)
         {
             using (PSSEntities db = new PSSEntities())
             {
@@ -102,6 +104,39 @@ namespace PSS_WebApi.Controllers
                         .CountAsync(),
                     rows = await db.StockInDepot
                         .Where(s => string.IsNullOrEmpty(PPName) || s.ProductLend.PPName == PPName)
+                        .Select(s => new
+                        {
+                            s.StockID,
+                            s.PPID,
+                            s.ProductLend.PPName,
+                            s.ProductLend.PPCompany,
+                            s.DepotID,
+                            s.Depots.DepotName,
+                            s.SIDData,
+                            s.SIDDate,
+                            s.SIDDesc,
+                            s.SIDDeliver,
+                            s.SIDID,
+                            s.SIDUser,
+                            s.Users.UsersName,
+                            s.SIDFreight
+
+                        })
+                    .OrderByDescending(s => s.StockID).Skip(offset).Take(limit).ToListAsync()
+                });
+            }
+        }
+        public async Task<IHttpActionResult> Get_StockInDepot_SelectWhereSIDDataPage_Async(int limit, int offset, string order, int SIDData)
+        {
+            using (PSSEntities db = new PSSEntities())
+            {
+                return Ok(new
+                {
+                    total = await db.StockInDepot
+                        .Where(s => s.SIDData == SIDData && s.StockReturn.FirstOrDefault() == null)
+                        .CountAsync(),
+                    rows = await db.StockInDepot
+                        .Where(s => s.SIDData == SIDData && s.StockReturn.FirstOrDefault() == null)
                         .Select(s => new
                         {
                             s.StockID,

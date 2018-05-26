@@ -632,6 +632,8 @@
     <Content Include="Views\Buy\StockInDepotEdit.cshtml" />
     <Content Include="Views\Shared\DepotsList.cshtml" />
     <Content Include="Views\Shared\List.cshtml" />
+    <Content Include="Views\Buy\StockReturn.cshtml" />
+    <Content Include="Views\Buy\StockReturnEdit.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

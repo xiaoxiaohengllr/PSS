@@ -81,6 +81,12 @@
         <AssociationConnector Association="PSSModel.FK_StockInDepot_Users" ManuallyRouted="false" />
         <AssociationConnector Association="PSSModel.FK_StockInDepotDetail_StockInDepot" ManuallyRouted="false" />
         <AssociationConnector Association="PSSModel.FK_Stocks_Users" ManuallyRouted="false" />
+        <EntityTypeShape EntityType="PSSModel.StockReturn" Width="1.5" PointX="5.25" PointY="22.5" />
+        <EntityTypeShape EntityType="PSSModel.StockReturnDetail" Width="1.5" PointX="12.5" PointY="21.125" />
+        <AssociationConnector Association="PSSModel.FK_StockReturnDetail_Products" />
+        <AssociationConnector Association="PSSModel.FK_StockReturn_StockReturn" />
+        <AssociationConnector Association="PSSModel.FK_StockReturn_Users" />
+        <AssociationConnector Association="PSSModel.FK_StockReturnDetail_StockReturn" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>
